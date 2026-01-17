@@ -25,52 +25,45 @@ interface ProjectSessionsProps {
   serverUrl: string;
 }
 
-async function fetchProjectSessions({
-  queryKey,
-}: {
-  queryKey: readonly [string, string, string];
-}): Promise<Session[]> {
-  const [, serverUrl, projectPath] = queryKey;
-  const client = getClient(serverUrl);
-
-  // Get sessions filtered by directory
-  const sessionsResult = await client.getClient().session.list({
-    query: { directory: projectPath },
-  });
-
-  if (sessionsResult.error) {
-    throw sessionsResult.error;
-  }
-
-  if (
-    !sessionsResult.data ||
-    !Array.isArray(sessionsResult.data) ||
-    sessionsResult.data.length === 0
-  ) {
-    return [];
-  }
-
-  // Get session statuses
-  const statusResult = await client.getClient().session.status();
-  const statuses = statusResult.data?.statuses || {};
-
-  const mappedSessions: Session[] = sessionsResult.data.map((s: any) => ({
-    id: s.id,
-    title: s.title || s.slug || `Session ${s.id.slice(0, 8)}`,
-    status: statuses[s.id] || ("idle" as const),
-    updatedAt: new Date(s.time.updated).toISOString(),
-  }));
-
-  return mappedSessions;
-}
-
 export function ProjectSessions({ project, serverUrl }: ProjectSessionsProps) {
   const { serverId } = useLocalSearchParams<{ serverId: string }>();
   const [showAll, setShowAll] = useState(false);
 
   const { data: sessions = [], isLoading } = useQuery({
-    queryKey: ["sessions", serverUrl, project.path] as const,
-    queryFn: fetchProjectSessions,
+    queryKey: ["server", serverUrl, "project", project.id, "sessions"],
+    queryFn: async () => {
+      const client = getClient(serverUrl);
+
+      // Get sessions filtered by directory
+      const sessionsResult = await client.getClient().session.list({
+        query: { directory: project.path },
+      });
+
+      if (sessionsResult.error) {
+        throw sessionsResult.error;
+      }
+
+      if (
+        !sessionsResult.data ||
+        !Array.isArray(sessionsResult.data) ||
+        sessionsResult.data.length === 0
+      ) {
+        return [];
+      }
+
+      // Get session statuses
+      const statusResult = await client.getClient().session.status();
+      const statuses = statusResult.data?.statuses || {};
+
+      const mappedSessions: Session[] = sessionsResult.data.map((s: any) => ({
+        id: s.id,
+        title: s.title || s.slug || `Session ${s.id.slice(0, 8)}`,
+        status: statuses[s.id] || ("idle" as const),
+        updatedAt: new Date(s.time.updated).toISOString(),
+      }));
+
+      return mappedSessions;
+    },
   });
 
   if (isLoading) {

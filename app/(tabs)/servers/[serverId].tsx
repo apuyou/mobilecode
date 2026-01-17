@@ -1,8 +1,15 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { router, useLocalSearchParams, useNavigation } from "expo-router";
 import { Trash2 } from "lucide-react-native";
 import { useEffect } from "react";
-import { Alert, Pressable, ScrollView, Text, View } from "react-native";
+import {
+  Alert,
+  Pressable,
+  RefreshControl,
+  ScrollView,
+  Text,
+  View,
+} from "react-native";
 
 import { ProjectSessions } from "@/components/ProjectSessions";
 import { getClient } from "@/lib/opencode-client";
@@ -14,40 +21,10 @@ interface Project {
   path: string;
 }
 
-async function fetchProjects({
-  queryKey,
-}: {
-  queryKey: readonly [string, string | undefined];
-}): Promise<Project[]> {
-  const [, serverUrl] = queryKey;
-
-  if (!serverUrl) {
-    throw new Error("Server not found");
-  }
-
-  const client = getClient(serverUrl);
-  const projectsResult = await client.getClient().project.list();
-
-  if (projectsResult.error) {
-    throw projectsResult.error;
-  }
-
-  if (!projectsResult.data || !Array.isArray(projectsResult.data)) {
-    return [];
-  }
-
-  const mappedProjects: Project[] = projectsResult.data.map((proj: any) => ({
-    id: proj.id,
-    name: proj.worktree?.split("/").pop() || "Unnamed Project",
-    path: proj.worktree || proj.id,
-  }));
-
-  return mappedProjects;
-}
-
 export default function SessionListScreen() {
   const { serverId } = useLocalSearchParams<{ serverId: string }>();
   const navigation = useNavigation();
+  const queryClient = useQueryClient();
   const servers = useAppStore((s) => s.servers);
   const removeServer = useAppStore((s) => s.removeServer);
   const server = servers.find((s) => s.id === serverId);
@@ -55,10 +32,36 @@ export default function SessionListScreen() {
   const {
     data: projects = [],
     isLoading,
+    isFetching,
     error,
   } = useQuery({
-    queryKey: ["projects", server?.url] as const,
-    queryFn: fetchProjects,
+    queryKey: ["server", server?.url, "projects"],
+    queryFn: async () => {
+      if (!server) {
+        throw new Error("Server not found");
+      }
+
+      const client = getClient(server.url);
+      const projectsResult = await client.getClient().project.list();
+
+      if (projectsResult.error) {
+        throw projectsResult.error;
+      }
+
+      if (!projectsResult.data || !Array.isArray(projectsResult.data)) {
+        return [];
+      }
+
+      const mappedProjects: Project[] = projectsResult.data.map(
+        (proj: any) => ({
+          id: proj.id,
+          name: proj.worktree?.split("/").pop() || "Unnamed Project",
+          path: proj.worktree || proj.id,
+        }),
+      );
+
+      return mappedProjects;
+    },
     enabled: !!server,
   });
 
@@ -69,6 +72,16 @@ export default function SessionListScreen() {
       });
     }
   }, [navigation, server, projects.length]);
+
+  const handleRefresh = () => {
+    if (!server) {
+      return;
+    }
+
+    queryClient.invalidateQueries({
+      queryKey: ["server", server.url],
+    });
+  };
 
   const handleDeleteServer = () => {
     if (!server) {
@@ -107,7 +120,7 @@ export default function SessionListScreen() {
       className="flex-1 bg-gray-50 dark:bg-gray-900"
       contentContainerStyle={{ flexGrow: 1 }}
       refreshControl={
-        <View>{/* React Query handles refresh via refetch */}</View>
+        <RefreshControl refreshing={isFetching} onRefresh={handleRefresh} />
       }
     >
       <View className="p-4">
