@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import { OpenCodeClient } from "@/lib/opencode-client";
+import { OpenCodeClientWrapper } from "@/lib/opencode-client";
 
 export function useTestConnection() {
   const [testing, setTesting] = useState(false);
@@ -20,7 +20,7 @@ export function useTestConnection() {
     setError(null);
 
     try {
-      const client = new OpenCodeClient(url.trim());
+      const client = new OpenCodeClientWrapper(url.trim());
       const success = await client.testConnection();
 
       if (success) {
