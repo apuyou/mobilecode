@@ -12,6 +12,7 @@ import "react-native-reanimated";
 import "../global.css";
 
 import { useColorScheme } from "@/components/useColorScheme";
+import { useReactQuerySetup } from "@/hooks/useReactQuerySetup";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -19,7 +20,7 @@ const queryClient = new QueryClient({
       retry: 3,
       staleTime: 1000 * 60,
       gcTime: 1000 * 60 * 60 * 24 * 365,
-      refetchOnWindowFocus: false,
+      refetchOnWindowFocus: true,
       refetchOnReconnect: true,
     },
   },
@@ -38,8 +39,12 @@ export default function RootLayout() {
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
   });
 
+  useReactQuerySetup();
+
   useEffect(() => {
-    if (error) throw error;
+    if (error) {
+      throw error;
+    }
   }, [error]);
 
   useEffect(() => {
