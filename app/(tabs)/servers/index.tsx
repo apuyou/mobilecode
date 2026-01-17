@@ -33,7 +33,7 @@ export default function ServersScreen() {
             <ServerCard
               key={server.id}
               server={server}
-              onPress={() => router.push(`/server/${server.id}`)}
+              onPress={() => router.push(`/(tabs)/servers/${server.id}`)}
             />
           ))
         )}

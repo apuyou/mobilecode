@@ -33,6 +33,7 @@ export default function TabLayout() {
         name="servers"
         options={{
           title: "Servers",
+          headerShown: false,
           tabBarIcon: ({ color, size }) => <Server size={size} color={color} />,
         }}
       />

@@ -76,12 +76,6 @@ function RootLayoutNav() {
             }}
           />
           <Stack.Screen
-            name="server/[serverId]/index"
-            options={{
-              title: "Sessions",
-            }}
-          />
-          <Stack.Screen
             name="server/[serverId]/session/[sessionId]"
             options={{
               title: "Chat",
