@@ -1,6 +1,7 @@
+import { useQuery } from "@tanstack/react-query";
 import { router, useLocalSearchParams } from "expo-router";
 import { ChevronDown, ChevronUp, Folder } from "lucide-react-native";
-import { useCallback, useEffect, useState } from "react";
+import { useState } from "react";
 import { ActivityIndicator, Pressable, Text, View } from "react-native";
 
 import { SessionCard } from "@/components/SessionCard";
@@ -24,66 +25,66 @@ interface ProjectSessionsProps {
   serverUrl: string;
 }
 
+async function fetchProjectSessions({
+  queryKey,
+}: {
+  queryKey: readonly [string, string, string];
+}): Promise<Session[]> {
+  const [, serverUrl, projectPath] = queryKey;
+  const client = getClient(serverUrl);
+
+  // Get sessions filtered by directory
+  const sessionsResult = await client.getClient().session.list({
+    query: { directory: projectPath },
+  });
+
+  if (sessionsResult.error) {
+    throw sessionsResult.error;
+  }
+
+  if (
+    !sessionsResult.data ||
+    !Array.isArray(sessionsResult.data) ||
+    sessionsResult.data.length === 0
+  ) {
+    return [];
+  }
+
+  // Get session statuses
+  const statusResult = await client.getClient().session.status();
+  const statuses = statusResult.data?.statuses || {};
+
+  const mappedSessions: Session[] = sessionsResult.data.map((s: any) => ({
+    id: s.id,
+    title: s.title || s.slug || `Session ${s.id.slice(0, 8)}`,
+    status: statuses[s.id] || ("idle" as const),
+    updatedAt: new Date(s.time.updated).toISOString(),
+  }));
+
+  return mappedSessions;
+}
+
 export function ProjectSessions({ project, serverUrl }: ProjectSessionsProps) {
   const { serverId } = useLocalSearchParams<{ serverId: string }>();
-  const [sessions, setSessions] = useState<Session[]>([]);
-  const [loading, setLoading] = useState(true);
   const [showAll, setShowAll] = useState(false);
 
-  const loadSessions = useCallback(async () => {
-    setLoading(true);
+  const { data: sessions = [], isLoading } = useQuery({
+    queryKey: ["sessions", serverUrl, project.path] as const,
+    queryFn: fetchProjectSessions,
+  });
 
-    try {
-      const client = getClient(serverUrl);
-
-      // Get sessions filtered by directory
-      const sessionsResult = await client.getClient().session.list({
-        query: { directory: project.path },
-      });
-
-      if (sessionsResult.error || !sessionsResult.data) {
-        setSessions([]);
-        return;
-      }
-
-      if (
-        !Array.isArray(sessionsResult.data) ||
-        sessionsResult.data.length === 0
-      ) {
-        setSessions([]);
-        return;
-      }
-
-      // Get session statuses
-      const statusResult = await client.getClient().session.status();
-      const statuses = statusResult.data?.statuses || {};
-
-      const mappedSessions = sessionsResult.data.map((s: any) => ({
-        id: s.id,
-        title: s.title || s.slug || `Session ${s.id.slice(0, 8)}`,
-        status: statuses[s.id] || ("idle" as const),
-        updatedAt: new Date(s.time.updated).toISOString(),
-      }));
-
-      setSessions(mappedSessions);
-    } catch {
-      setSessions([]);
-    } finally {
-      setLoading(false);
-    }
-  }, [project.path, serverUrl]);
-
-  useEffect(() => {
-    loadSessions();
-  }, [loadSessions]);
-
-  if (loading) {
+  if (isLoading) {
     return (
       <View className="mb-6">
-        <View className="flex-row items-center mb-3">
-          <Folder size={16} color="#6b7280" />
-          <Text className="text-sm font-semibold text-gray-700 dark:text-gray-300 ml-2">
-            {project.name}
+        <View className="mb-3">
+          <View className="flex-row items-center">
+            <Folder size={16} color="#6b7280" />
+            <Text className="text-sm font-semibold text-gray-700 dark:text-gray-300 ml-2">
+              {project.name}
+            </Text>
+          </View>
+          <Text className="text-xs text-gray-500 dark:text-gray-400 ml-6">
+            {project.path}
           </Text>
         </View>
         <View className="py-4 items-center">
