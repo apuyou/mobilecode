@@ -31,12 +31,12 @@ export default function SessionListScreen() {
   } = useProjects(server?.url);
 
   useEffect(() => {
-    if (server && projects.length !== undefined) {
+    if (server) {
       navigation.setOptions({
-        title: `${server.name} • ${projects.length} ${projects.length === 1 ? "project" : "projects"}`,
+        title: server.name,
       });
     }
-  }, [navigation, server, projects.length]);
+  }, [navigation, server]);
 
   const handleRefresh = () => {
     if (!server) {
