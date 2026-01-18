@@ -1,5 +1,5 @@
 import { Tabs } from "expo-router";
-import { Home, Server, Settings } from "lucide-react-native";
+import { Clock, Server, Settings } from "lucide-react-native";
 
 import { useColorScheme } from "@/components/useColorScheme";
 
@@ -25,8 +25,8 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: "Dashboard",
-          tabBarIcon: ({ color, size }) => <Home size={size} color={color} />,
+          title: "Recents",
+          tabBarIcon: ({ color, size }) => <Clock size={size} color={color} />,
         }}
       />
       <Tabs.Screen

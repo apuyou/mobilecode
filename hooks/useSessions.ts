@@ -1,0 +1,35 @@
+import { useQuery } from "@tanstack/react-query";
+
+import { createClient } from "@/lib/opencode-client";
+
+export function useSessions(serverUrl?: string, projectPath?: string) {
+  return useQuery({
+    queryKey: ["server", serverUrl, "project", projectPath, "sessions"],
+    queryFn: async () => {
+      if (!serverUrl) {
+        throw new Error("Server URL not provided");
+      }
+
+      const client = createClient(serverUrl, projectPath);
+      const result = await client.session.list({
+        query: projectPath ? { directory: projectPath } : undefined,
+      });
+
+      if (result.error) {
+        throw result.error;
+      }
+
+      return result.data || [];
+    },
+    select: (data) => {
+      return data.map((s: any) => ({
+        id: s.id,
+        title: s.title || s.slug || `Session ${s.id.slice(0, 8)}`,
+        updatedAt: new Date(s.time.updated).toISOString(),
+        projectID: s.projectID,
+        directory: s.directory,
+      }));
+    },
+    enabled: !!serverUrl,
+  });
+}

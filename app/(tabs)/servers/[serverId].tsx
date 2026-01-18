@@ -1,4 +1,4 @@
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { router, useLocalSearchParams, useNavigation } from "expo-router";
 import { Trash2 } from "lucide-react-native";
 import { useEffect } from "react";
@@ -12,14 +12,8 @@ import {
 } from "react-native";
 
 import { ProjectSessions } from "@/components/ProjectSessions";
-import { createClient } from "@/lib/opencode-client";
+import { useProjects } from "@/hooks/useProjects";
 import { useAppStore } from "@/stores";
-
-interface Project {
-  id: string;
-  name: string;
-  path: string;
-}
 
 export default function SessionListScreen() {
   const { serverId } = useLocalSearchParams<{ serverId: string }>();
@@ -34,27 +28,7 @@ export default function SessionListScreen() {
     isLoading,
     isFetching,
     error,
-  } = useQuery({
-    queryKey: ["server", server?.url, "projects"],
-    queryFn: async () => {
-      if (!server) {
-        throw new Error("Server not found");
-      }
-
-      const client = createClient(server.url);
-      const projectsResult = await client.project.list();
-
-      return projectsResult.data || [];
-    },
-    select: (data) => {
-      return data.map((proj) => ({
-        id: proj.id,
-        name: proj.worktree?.split("/").pop() || proj.id,
-        path: proj.worktree || proj.id,
-      }));
-    },
-    enabled: !!server,
-  });
+  } = useProjects(server?.url);
 
   useEffect(() => {
     if (server && projects.length !== undefined) {

@@ -1,11 +1,10 @@
-import { useQuery } from "@tanstack/react-query";
 import { router, useLocalSearchParams } from "expo-router";
 import { ChevronDown, ChevronUp, Folder } from "lucide-react-native";
 import { useState } from "react";
 import { ActivityIndicator, Pressable, Text, View } from "react-native";
 
 import { SessionCard } from "@/components/SessionCard";
-import { createClient } from "@/lib/opencode-client";
+import { useSessions } from "@/hooks/useSessions";
 
 interface Project {
   id: string;
@@ -22,30 +21,10 @@ export function ProjectSessions({ project, serverUrl }: ProjectSessionsProps) {
   const { serverId } = useLocalSearchParams<{ serverId: string }>();
   const [showAll, setShowAll] = useState(false);
 
-  const { data: sessions = [], isLoading } = useQuery({
-    queryKey: ["server", serverUrl, "project", project.id, "sessions"],
-    queryFn: async () => {
-      const client = createClient(serverUrl, project.path);
-
-      const sessionsResult = await client.session.list({
-        query: { directory: project.path },
-      });
-
-      if (sessionsResult.error) {
-        throw sessionsResult.error;
-      }
-
-      return sessionsResult.data || [];
-    },
-    select: (data) => {
-      return data.map((s: any) => ({
-        serverId: serverId!,
-        id: s.id,
-        title: s.title || s.slug || `Session ${s.id.slice(0, 8)}`,
-        updatedAt: new Date(s.time.updated).toISOString(),
-      }));
-    },
-  });
+  const { data: sessions = [], isLoading } = useSessions(
+    serverUrl,
+    project.path,
+  );
 
   if (isLoading) {
     return (
