@@ -43,6 +43,13 @@
         "projectId": "333fd236-e054-466d-8b1a-81a16213d955"
       }
     },
-    "owner": "apuyou"
+    "owner": "apuyou",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "fallbackToCacheTimeout": 3000,
+      "url": "https://u.expo.dev/333fd236-e054-466d-8b1a-81a16213d955"
+    }
   }
 }
