@@ -1,9 +1,11 @@
+import { useQueryClient } from "@tanstack/react-query";
 import { router } from "expo-router";
 import {
   ActivityIndicator,
   FlatList,
   Image,
   Pressable,
+  RefreshControl,
   Text,
   View,
 } from "react-native";
@@ -13,8 +15,17 @@ import { formatTimeAgo } from "@/lib/formatTimeAgo";
 import { useAppStore } from "@/stores";
 
 export default function RecentsScreen() {
+  const queryClient = useQueryClient();
   const servers = useAppStore((s) => s.servers);
   const { recentSessions, isLoading } = useAllSessions(servers);
+
+  const handleRefresh = () => {
+    servers.forEach((server) => {
+      queryClient.invalidateQueries({
+        queryKey: ["server", server.url],
+      });
+    });
+  };
 
   return (
     <FlatList
@@ -22,6 +33,9 @@ export default function RecentsScreen() {
       contentContainerStyle={{ padding: 16, flexGrow: 1 }}
       data={recentSessions}
       keyExtractor={(item) => `${item.serverId}-${item.sessionId}`}
+      refreshControl={
+        <RefreshControl refreshing={isLoading} onRefresh={handleRefresh} />
+      }
       renderItem={({ item }) => (
         <Pressable
           onPress={() =>
