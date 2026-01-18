@@ -61,9 +61,7 @@ export default function RecentsScreen() {
             <View
               className="w-10 h-10 rounded-lg items-center justify-center mr-3"
               style={{
-                backgroundColor: item.projectIcon?.color
-                  ? item.projectIcon.color
-                  : "#e0e7ff",
+                backgroundColor: item.projectIcon?.color || "#e0e7ff",
               }}
             >
               {item.projectIcon?.url ? (

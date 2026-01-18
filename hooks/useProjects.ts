@@ -25,11 +25,9 @@ export function useProjects(serverUrl?: string) {
         name: proj.worktree?.split("/").pop() || proj.id,
         path: proj.worktree || proj.id,
         icon:
-          "icon" in proj &&
-          (proj.icon as {
-            color?: string;
-            url?: string;
-          }),
+          "icon" in proj
+            ? (proj.icon as { color?: string; url?: string })
+            : undefined,
       }));
     },
     enabled: !!serverUrl,

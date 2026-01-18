@@ -1,8 +1,11 @@
+import { useQueries } from "@tanstack/react-query";
 import { useMemo } from "react";
 
+import { createClient } from "@/lib/opencode-client";
 import { useProjects } from "@/hooks/useProjects";
-import { useSessions } from "@/hooks/useSessions";
 import { Server } from "@/stores";
+
+import type { Session } from "@opencode-ai/sdk/gen/types.gen";
 
 export interface RecentSession {
   serverId: string;
@@ -21,43 +24,64 @@ export interface RecentSession {
 export function useAllSessions(servers: Server[]) {
   const projectsResults = servers.map((server) => ({
     server,
-    ...useProjects(server.url),
+    query: useProjects(server.url),
   }));
 
   const serverProjectPairs = useMemo(() => {
-    return projectsResults.flatMap(({ server, data }) => {
-      if (!data) {
+    return projectsResults.flatMap(({ server, query }) => {
+      if (!query.data) {
         return [];
       }
 
-      return data.map((project) => ({
+      return query.data.map((project) => ({
         server,
         project,
       }));
     });
   }, [projectsResults]);
 
-  const sessionsResults = serverProjectPairs.map(({ server, project }) => ({
-    server,
-    project,
-    ...useSessions(server.url, project.path),
-  }));
+  const sessionsQueries = useQueries({
+    queries: serverProjectPairs.map(({ server, project }) => ({
+      queryKey: ["server", server.url, "project", project.path, "sessions"],
+      queryFn: async () => {
+        const client = createClient(server.url, project.path);
+        const result = await client.session.list({
+          query: { directory: project.path },
+        });
+
+        if (result.error) {
+          throw result.error;
+        }
+
+        return {
+          server,
+          project,
+          sessions: (result.data || []).map((s: Session) => ({
+            id: s.id,
+            title: s.title || `Session ${s.id.slice(0, 8)}`,
+            updatedAt: new Date(s.time.updated).toISOString(),
+          })),
+        };
+      },
+      enabled: !!server,
+    })),
+  });
 
   const recentSessions = useMemo(() => {
     const sessions: RecentSession[] = [];
 
-    sessionsResults.forEach(({ server, project, data }) => {
-      if (!data) {
+    sessionsQueries.forEach((query) => {
+      if (!query.data) {
         return;
       }
 
-      data.forEach((session) => {
+      query.data.sessions.forEach((session) => {
         sessions.push({
-          serverId: server.id,
-          serverName: server.name,
-          projectId: project.id,
-          projectName: project.name,
-          projectIcon: project.icon,
+          serverId: query.data.server.id,
+          serverName: query.data.server.name,
+          projectId: query.data.project.id,
+          projectName: query.data.project.name,
+          projectIcon: query.data.project.icon,
           sessionId: session.id,
           sessionTitle: session.title,
           updatedAt: session.updatedAt,
@@ -69,11 +93,11 @@ export function useAllSessions(servers: Server[]) {
       (a, b) =>
         new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
     );
-  }, [sessionsResults]);
+  }, [sessionsQueries]);
 
   const isLoading =
-    projectsResults.some((q) => q.isLoading) ||
-    sessionsResults.some((q) => q.isLoading);
+    projectsResults.some((r) => r.query.isLoading) ||
+    sessionsQueries.some((q) => q.isLoading);
 
   return { recentSessions, isLoading };
 }
