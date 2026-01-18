@@ -51,28 +51,30 @@ export default function SessionChatScreen() {
   const project = projectsData?.find((p) => p.id === projectId);
   const projectPath = project?.worktree;
 
-  const { data: sessionData } = useQuery({
-    queryKey: ["server", server?.url, "project", projectPath, "sessions"],
+  const { data: session } = useQuery({
+    queryKey: [
+      "server",
+      server?.url,
+      "project",
+      projectPath,
+      "sessions",
+      sessionId,
+    ],
     queryFn: async () => {
       if (!server) {
         throw new Error("Server not found");
       }
 
       const client = createClient(server.url, projectPath);
-      const result = await client.session.list({
-        query: { directory: projectPath },
+      const result = await client.session.get({
+        path: { id: sessionId },
       });
-
-      if (result.error) {
-        throw result.error;
-      }
 
       return result.data;
     },
     enabled: !!server && !!projectPath,
   });
 
-  const session = sessionData?.find((s) => s.id === sessionId);
   const sessionTitle =
     session?.title || `Session ${sessionId?.slice(0, 8) || "Chat"}`;
 
