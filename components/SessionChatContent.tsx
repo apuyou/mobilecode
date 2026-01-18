@@ -150,7 +150,7 @@ export function SessionChatContent({
                   `/server/${server.id}/project/${projectId}/session/${sessionId}/settings`,
                 )
               }
-              className="mr-2"
+              className="p-2"
             >
               <Settings size={24} color="#3b82f6" />
             </Pressable>
