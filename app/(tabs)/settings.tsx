@@ -6,6 +6,7 @@ import {
   Alert,
   Linking,
 } from "react-native";
+import Constants from "expo-constants";
 import { Trash2, ExternalLink, Info } from "lucide-react-native";
 
 import { useAppStore } from "@/stores";
@@ -13,6 +14,12 @@ import { useAppStore } from "@/stores";
 export default function SettingsScreen() {
   const servers = useAppStore((s) => s.servers);
   const clearAllData = useAppStore((s) => s.clearAllData);
+
+  const version = Constants.expoConfig?.version || "Unknown";
+  const buildNumber =
+    Constants.expoConfig?.ios?.buildNumber ||
+    Constants.expoConfig?.android?.versionCode?.toString() ||
+    "Unknown";
 
   const handleClearData = () => {
     Alert.alert(
@@ -44,10 +51,10 @@ export default function SettingsScreen() {
             </Text>
           </View>
           <Text className="text-gray-600 dark:text-gray-300 mb-2">
-            OpenCode Mobile
+            MobileCode
           </Text>
           <Text className="text-gray-500 dark:text-gray-400 text-sm">
-            Version 0.1.0
+            Version {version} ({buildNumber})
           </Text>
           <Text className="text-gray-500 dark:text-gray-400 text-sm mt-1">
             Remote control for OpenCode instances
