@@ -4,9 +4,9 @@ import { Trash2 } from "lucide-react-native";
 import { useEffect } from "react";
 import {
   Alert,
+  FlatList,
   Pressable,
   RefreshControl,
-  ScrollView,
   Text,
   View,
 } from "react-native";
@@ -107,69 +107,61 @@ export default function SessionListScreen() {
   }
 
   return (
-    <ScrollView
+    <FlatList
       className="flex-1 bg-gray-50 dark:bg-gray-900"
-      contentContainerStyle={{ flexGrow: 1 }}
+      contentContainerStyle={{ padding: 16, flexGrow: 1 }}
+      data={projects}
+      keyExtractor={(item) => item.id}
+      renderItem={({ item }) => (
+        <ProjectSessions project={item} serverUrl={server.url} />
+      )}
       refreshControl={
         <RefreshControl refreshing={isFetching} onRefresh={handleRefresh} />
       }
-    >
-      <View className="p-4">
-        {/* Connection Error */}
-        {error && (
+      ListHeaderComponent={
+        error ? (
           <View className="bg-red-50 dark:bg-red-900/30 rounded-xl p-4 mb-4">
             <Text className="text-red-600 dark:text-red-400">
-              {(error as Error).message}
+              {error.message}
             </Text>
           </View>
-        )}
-
-        {/* Loading State */}
-        {isLoading && (
+        ) : null
+      }
+      ListEmptyComponent={
+        isLoading ? (
           <View className="py-12 items-center">
             <Text className="text-gray-500 dark:text-gray-400 mt-3">
               Loading projects...
             </Text>
           </View>
-        )}
-
-        {/* Empty State */}
-        {!isLoading && projects.length === 0 && !error && (
+        ) : (
           <View className="py-12 items-center">
             <Text className="text-gray-500 dark:text-gray-400 text-center">
               No projects found.
             </Text>
           </View>
-        )}
+        )
+      }
+      ListFooterComponent={
+        <>
+          <View className="bg-white dark:bg-gray-800 rounded-xl p-4 mb-4 mt-8">
+            <Text className="text-sm text-gray-500 dark:text-gray-400">
+              Server URL
+            </Text>
+            <Text className="text-base text-gray-900 dark:text-white mt-1">
+              {server.url}
+            </Text>
+          </View>
 
-        {/* Projects List */}
-        {projects.map((project) => (
-          <ProjectSessions
-            key={project.id}
-            project={project}
-            serverUrl={server.url}
-          />
-        ))}
-
-        {/* Server Info */}
-        <View className="bg-white dark:bg-gray-800 rounded-xl p-4 mb-4 mt-8">
-          <Text className="text-sm text-gray-500 dark:text-gray-400">
-            Server URL
-          </Text>
-          <Text className="text-base text-gray-900 dark:text-white mt-1">
-            {server.url}
-          </Text>
-        </View>
-
-        {/* Delete Server Button */}
-        <Pressable
-          onPress={handleDeleteServer}
-          className="mt-8 bg-red-50 dark:bg-red-900/30 rounded-xl p-4 flex-row items-center justify-center"
-        >
-          <Trash2 size={20} color="#ef4444" />
-          <Text className="text-red-500 ml-3 font-medium">Delete Server</Text>
-        </Pressable>
-      </View>
-    </ScrollView>
+          <Pressable
+            onPress={handleDeleteServer}
+            className="bg-red-50 dark:bg-red-900/30 rounded-xl p-4 flex-row items-center justify-center"
+          >
+            <Trash2 size={20} color="#ef4444" />
+            <Text className="text-red-500 ml-3 font-medium">Delete Server</Text>
+          </Pressable>
+        </>
+      }
+    />
   );
 }

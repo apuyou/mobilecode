@@ -176,37 +176,38 @@ export default function SessionChatScreen() {
           keyboardVerticalOffset={100}
         >
           <View className="flex-1 bg-gray-50 dark:bg-gray-900">
-            {isLoading ? (
-              <View className="flex-1 items-center justify-center">
-                <ActivityIndicator size="large" color="#3b82f6" />
-                <Text className="text-gray-500 dark:text-gray-400 mt-3">
-                  Loading messages...
-                </Text>
-              </View>
-            ) : error ? (
-              <View className="flex-1 items-center justify-center p-4">
-                <Text className="text-red-600 dark:text-red-400 text-center">
-                  {(error as Error).message}
-                </Text>
-              </View>
-            ) : messages.length === 0 ? (
-              <View className="flex-1 items-center justify-center p-4">
-                <Text className="text-gray-500 dark:text-gray-400 text-center">
-                  No messages yet. Start the conversation!
-                </Text>
-              </View>
-            ) : (
-              <FlatList
-                ref={flatListRef}
-                data={messages}
-                keyExtractor={(item) => item.info.id}
-                renderItem={({ item }) => <ChatMessage message={item} />}
-                contentContainerStyle={{ padding: 16 }}
-                onContentSizeChange={() =>
-                  flatListRef.current?.scrollToEnd({ animated: true })
-                }
-              />
-            )}
+            <FlatList
+              ref={flatListRef}
+              data={messages}
+              keyExtractor={(item) => item.info.id}
+              renderItem={({ item }) => <ChatMessage message={item} />}
+              contentContainerStyle={{ padding: 16, flexGrow: 1 }}
+              ListEmptyComponent={
+                isLoading ? (
+                  <View className="flex-1 items-center justify-center">
+                    <ActivityIndicator size="large" color="#3b82f6" />
+                    <Text className="text-gray-500 dark:text-gray-400 mt-3">
+                      Loading messages...
+                    </Text>
+                  </View>
+                ) : error ? (
+                  <View className="flex-1 items-center justify-center p-4">
+                    <Text className="text-red-600 dark:text-red-400 text-center">
+                      {(error as Error).message}
+                    </Text>
+                  </View>
+                ) : (
+                  <View className="flex-1 items-center justify-center p-4">
+                    <Text className="text-gray-500 dark:text-gray-400 text-center">
+                      No messages yet. Start the conversation!
+                    </Text>
+                  </View>
+                )
+              }
+              onContentSizeChange={() =>
+                flatListRef.current?.scrollToEnd({ animated: true })
+              }
+            />
 
             <MessageInput
               onSend={(text) => sendMessageMutation.mutate(text)}
