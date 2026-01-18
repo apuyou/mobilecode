@@ -2,14 +2,10 @@ import { useQuery } from "@tanstack/react-query";
 
 import { createClient } from "@/lib/opencode-client";
 
-export function useProjects(serverUrl?: string) {
+export function useProjects(serverUrl: string) {
   return useQuery({
     queryKey: ["server", serverUrl, "projects"],
     queryFn: async () => {
-      if (!serverUrl) {
-        throw new Error("Server URL not provided");
-      }
-
       const client = createClient(serverUrl);
       const projectsResult = await client.project.list();
 
@@ -30,6 +26,5 @@ export function useProjects(serverUrl?: string) {
             : undefined,
       }));
     },
-    enabled: !!serverUrl,
   });
 }

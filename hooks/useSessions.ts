@@ -2,14 +2,10 @@ import { useQuery } from "@tanstack/react-query";
 
 import { createClient } from "@/lib/opencode-client";
 
-export function useSessions(serverUrl?: string, projectPath?: string) {
+export function useSessions(serverUrl: string, projectPath?: string) {
   return useQuery({
     queryKey: ["server", serverUrl, "project", projectPath, "sessions"],
     queryFn: async () => {
-      if (!serverUrl) {
-        throw new Error("Server URL not provided");
-      }
-
       const client = createClient(serverUrl, projectPath);
       const result = await client.session.list({
         query: projectPath ? { directory: projectPath } : undefined,
@@ -30,6 +26,5 @@ export function useSessions(serverUrl?: string, projectPath?: string) {
         directory: s.directory,
       }));
     },
-    enabled: !!serverUrl,
   });
 }
