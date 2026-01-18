@@ -7,13 +7,6 @@ import { ActivityIndicator, Pressable, Text, View } from "react-native";
 import { SessionCard } from "@/components/SessionCard";
 import { createClient } from "@/lib/opencode-client";
 
-interface Session {
-  id: string;
-  title: string;
-  status: "idle" | "busy" | "retry";
-  updatedAt: string;
-}
-
 interface Project {
   id: string;
   name: string;
@@ -34,7 +27,6 @@ export function ProjectSessions({ project, serverUrl }: ProjectSessionsProps) {
     queryFn: async () => {
       const client = createClient(serverUrl, project.path);
 
-      // Get sessions filtered by directory
       const sessionsResult = await client.session.list({
         query: { directory: project.path },
       });
@@ -43,26 +35,15 @@ export function ProjectSessions({ project, serverUrl }: ProjectSessionsProps) {
         throw sessionsResult.error;
       }
 
-      if (
-        !sessionsResult.data ||
-        !Array.isArray(sessionsResult.data) ||
-        sessionsResult.data.length === 0
-      ) {
-        return [];
-      }
-
-      // Get session statuses
-      const statusResult = await client.session.status();
-      const statuses = statusResult.data?.statuses || {};
-
-      const mappedSessions: Session[] = sessionsResult.data.map((s: any) => ({
+      return sessionsResult.data || [];
+    },
+    select: (data) => {
+      return data.map((s: any) => ({
+        serverId: serverId!,
         id: s.id,
         title: s.title || s.slug || `Session ${s.id.slice(0, 8)}`,
-        status: statuses[s.id] || ("idle" as const),
         updatedAt: new Date(s.time.updated).toISOString(),
       }));
-
-      return mappedSessions;
     },
   });
 
@@ -113,7 +94,8 @@ export function ProjectSessions({ project, serverUrl }: ProjectSessionsProps) {
       {displayedSessions.map((session) => (
         <SessionCard
           key={session.id}
-          session={session}
+          title={session.title}
+          updatedAt={session.updatedAt}
           onPress={() =>
             router.push(
               `/server/${serverId}/project/${project.id}/session/${session.id}`,
