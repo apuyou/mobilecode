@@ -1,11 +1,13 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Stack, useLocalSearchParams } from "expo-router";
+import { router, Stack, useLocalSearchParams } from "expo-router";
+import { Settings } from "lucide-react-native";
 import { useEffect, useRef } from "react";
 import {
   ActivityIndicator,
   FlatList,
   KeyboardAvoidingView,
   Platform,
+  Pressable,
   Text,
   View,
 } from "react-native";
@@ -101,6 +103,21 @@ export default function SessionChatScreen() {
     refetchInterval: 3000,
   });
 
+  // Get the model from the latest user message, or use default
+  const latestUserMessage = [...messages]
+    .reverse()
+    .find((m) => m.info.role === "user");
+  const currentModel =
+    latestUserMessage?.info.role === "user"
+      ? {
+          modelID: latestUserMessage.info.model.modelID,
+          providerID: latestUserMessage.info.model.providerID,
+        }
+      : {
+          modelID: "big-pickle",
+          providerID: "opencode",
+        };
+
   const sendMessageMutation = useMutation({
     mutationFn: async (text: string) => {
       if (!server || !sessionId || !session) {
@@ -116,10 +133,7 @@ export default function SessionChatScreen() {
         body: {
           messageID,
           agent: "build",
-          model: {
-            modelID: "big-pickle",
-            providerID: "opencode",
-          },
+          model: currentModel,
           parts: [
             {
               id: partID,
@@ -167,6 +181,18 @@ export default function SessionChatScreen() {
       <Stack.Screen
         options={{
           title: sessionTitle,
+          headerRight: () => (
+            <Pressable
+              onPress={() =>
+                router.push(
+                  `/server/${serverId}/project/${projectId}/session/${sessionId}/settings`,
+                )
+              }
+              className="mr-2"
+            >
+              <Settings size={24} color="#3b82f6" />
+            </Pressable>
+          ),
         }}
       />
       <SafeAreaView
