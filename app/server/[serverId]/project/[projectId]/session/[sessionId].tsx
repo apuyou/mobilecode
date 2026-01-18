@@ -27,6 +27,7 @@ export default function SessionChatScreen() {
   const servers = useAppStore((s) => s.servers);
   const server = servers.find((s) => s.id === serverId);
   const flatListRef = useRef<FlatList>(null);
+  const hasScrolledToEndRef = useRef(false);
 
   const { data: projectsData } = useQuery({
     queryKey: ["server", server?.url, "projects"],
@@ -142,7 +143,7 @@ export default function SessionChatScreen() {
   });
 
   useEffect(() => {
-    if (messages.length > 0) {
+    if (messages.length > 0 && hasScrolledToEndRef.current) {
       setTimeout(() => {
         flatListRef.current?.scrollToEnd({ animated: true });
       }, 100);
@@ -182,6 +183,21 @@ export default function SessionChatScreen() {
               keyExtractor={(item) => item.info.id}
               renderItem={({ item }) => <ChatMessage message={item} />}
               contentContainerStyle={{ padding: 16, flexGrow: 1 }}
+              initialScrollIndex={
+                messages.length > 0 ? messages.length - 1 : undefined
+              }
+              onScrollToIndexFailed={() => {
+                setTimeout(() => {
+                  if (messages.length > 0) {
+                    flatListRef.current?.scrollToEnd({ animated: false });
+                  }
+                }, 100);
+              }}
+              onLayout={() => {
+                if (!hasScrolledToEndRef.current && messages.length > 0) {
+                  hasScrolledToEndRef.current = true;
+                }
+              }}
               ListEmptyComponent={
                 isLoading ? (
                   <View className="flex-1 items-center justify-center">
@@ -204,9 +220,11 @@ export default function SessionChatScreen() {
                   </View>
                 )
               }
-              onContentSizeChange={() =>
-                flatListRef.current?.scrollToEnd({ animated: true })
-              }
+              onContentSizeChange={() => {
+                if (hasScrolledToEndRef.current) {
+                  flatListRef.current?.scrollToEnd({ animated: true });
+                }
+              }}
             />
 
             <MessageInput
