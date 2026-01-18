@@ -1,14 +1,17 @@
 import { Text, View } from "react-native";
+import type { Message, Part } from "@opencode-ai/sdk";
 
 import { ToolInvocation } from "./ToolInvocation";
-import { Message } from "@/lib/types";
 
 interface ChatMessageProps {
-  message: Message;
+  message: {
+    info: Message;
+    parts: Part[];
+  };
 }
 
 export function ChatMessage({ message }: ChatMessageProps) {
-  const isUser = message.role === "user";
+  const isUser = message.info.role === "user";
 
   return (
     <View className={`mb-4 ${isUser ? "items-end" : "items-start"}`}>
@@ -28,19 +31,23 @@ export function ChatMessage({ message }: ChatMessageProps) {
                   isUser ? "text-white" : "text-gray-900 dark:text-gray-100"
                 }`}
               >
-                {part.content}
+                {part.text}
               </Text>
             );
           }
 
-          if (part.type === "tool-invocation") {
+          if (part.type === "tool") {
             return (
               <ToolInvocation
                 key={index}
-                toolName={part.toolName}
-                input={part.input}
-                output={part.output}
-                status={part.status}
+                toolName={part.tool || "Unknown Tool"}
+                input={part.state?.input}
+                output={
+                  part.state?.status === "completed"
+                    ? part.state.output
+                    : undefined
+                }
+                status={part.state?.status || "unknown"}
               />
             );
           }
@@ -49,7 +56,7 @@ export function ChatMessage({ message }: ChatMessageProps) {
         })}
       </View>
       <Text className="text-xs text-gray-500 dark:text-gray-400 mt-1 px-2">
-        {new Date(message.createdAt).toLocaleTimeString()}
+        {new Date(message.info.time.created).toLocaleTimeString()}
       </Text>
     </View>
   );

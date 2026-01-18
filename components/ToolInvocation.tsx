@@ -57,7 +57,7 @@ export function ToolInvocation({
 
       {expanded && (
         <View className="px-3 pb-3 border-t border-gray-200 dark:border-gray-700">
-          {input && (
+          {input !== undefined && (
             <View className="mt-2">
               <Text className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">
                 Input:
@@ -70,7 +70,7 @@ export function ToolInvocation({
             </View>
           )}
 
-          {output && (
+          {output !== undefined && (
             <View className="mt-2">
               <Text className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">
                 Output:

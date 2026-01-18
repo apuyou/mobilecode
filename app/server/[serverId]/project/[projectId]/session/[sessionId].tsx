@@ -15,7 +15,6 @@ import { ChatMessage } from "@/components/ChatMessage";
 import { MessageInput } from "@/components/MessageInput";
 import { Identifier } from "@/lib/id";
 import { createClient } from "@/lib/opencode-client";
-import { Message } from "@/lib/types";
 import { useAppStore } from "@/stores";
 
 export default function SessionChatScreen() {
@@ -48,7 +47,7 @@ export default function SessionChatScreen() {
     enabled: !!server && !!projectId,
   });
 
-  const project = projectsData?.find((p: any) => p.id === projectId);
+  const project = projectsData?.find((p) => p.id === projectId);
   const projectPath = project?.worktree;
 
   const { data: sessionData } = useQuery({
@@ -72,7 +71,7 @@ export default function SessionChatScreen() {
     enabled: !!server && !!projectPath,
   });
 
-  const session = sessionData?.find((s: any) => s.id === sessionId);
+  const session = sessionData?.find((s) => s.id === sessionId);
   const sessionTitle =
     session?.title || `Session ${sessionId?.slice(0, 8) || "Chat"}`;
 
@@ -94,38 +93,6 @@ export default function SessionChatScreen() {
       });
 
       return messagesResult.data || [];
-    },
-    select: (data) => {
-      return data.map((msg) => {
-        const parts = msg.parts
-          .map((part) => {
-            if (part.type === "text") {
-              return {
-                type: "text",
-                content: part.text,
-              };
-            }
-
-            if (part.type === "tool") {
-              return {
-                type: "tool-invocation",
-                toolName: part.tool || "Unknown Tool",
-                input: part.state?.input || {},
-                status: part.state?.status || "unknown",
-              };
-            }
-
-            return null;
-          })
-          .filter(Boolean);
-
-        return {
-          id: msg.info.id,
-          role: msg.info.role,
-          parts,
-          createdAt: new Date(msg.info.time.created).toISOString(),
-        };
-      });
     },
     enabled: !!server && !!sessionId,
     refetchInterval: 3000,
@@ -232,7 +199,7 @@ export default function SessionChatScreen() {
               <FlatList
                 ref={flatListRef}
                 data={messages}
-                keyExtractor={(item) => item.id}
+                keyExtractor={(item) => item.info.id}
                 renderItem={({ item }) => <ChatMessage message={item} />}
                 contentContainerStyle={{ padding: 16 }}
                 onContentSizeChange={() =>
