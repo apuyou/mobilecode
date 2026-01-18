@@ -71,7 +71,7 @@ export function useAllSessions(servers: Server[]) {
     const sessions: RecentSession[] = [];
 
     sessionsQueries.forEach((query) => {
-      if (!query.data) {
+      if (!query.data || !query.data.sessions) {
         return;
       }
 
