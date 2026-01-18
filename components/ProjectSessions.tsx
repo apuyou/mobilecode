@@ -5,7 +5,7 @@ import { useState } from "react";
 import { ActivityIndicator, Pressable, Text, View } from "react-native";
 
 import { SessionCard } from "@/components/SessionCard";
-import { getClient } from "@/lib/opencode-client";
+import { createClient } from "@/lib/opencode-client";
 
 interface Session {
   id: string;
@@ -32,10 +32,10 @@ export function ProjectSessions({ project, serverUrl }: ProjectSessionsProps) {
   const { data: sessions = [], isLoading } = useQuery({
     queryKey: ["server", serverUrl, "project", project.id, "sessions"],
     queryFn: async () => {
-      const client = getClient(serverUrl);
+      const client = createClient(serverUrl, project.path);
 
       // Get sessions filtered by directory
-      const sessionsResult = await client.getClient().session.list({
+      const sessionsResult = await client.session.list({
         query: { directory: project.path },
       });
 
@@ -52,7 +52,7 @@ export function ProjectSessions({ project, serverUrl }: ProjectSessionsProps) {
       }
 
       // Get session statuses
-      const statusResult = await client.getClient().session.status();
+      const statusResult = await client.session.status();
       const statuses = statusResult.data?.statuses || {};
 
       const mappedSessions: Session[] = sessionsResult.data.map((s: any) => ({
@@ -115,7 +115,9 @@ export function ProjectSessions({ project, serverUrl }: ProjectSessionsProps) {
           key={session.id}
           session={session}
           onPress={() =>
-            router.push(`/server/${serverId}/session/${session.id}`)
+            router.push(
+              `/server/${serverId}/project/${project.id}/session/${session.id}`,
+            )
           }
         />
       ))}

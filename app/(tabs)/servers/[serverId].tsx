@@ -12,7 +12,7 @@ import {
 } from "react-native";
 
 import { ProjectSessions } from "@/components/ProjectSessions";
-import { getClient } from "@/lib/opencode-client";
+import { createClient } from "@/lib/opencode-client";
 import { useAppStore } from "@/stores";
 
 interface Project {
@@ -41,26 +41,17 @@ export default function SessionListScreen() {
         throw new Error("Server not found");
       }
 
-      const client = getClient(server.url);
-      const projectsResult = await client.getClient().project.list();
+      const client = createClient(server.url);
+      const projectsResult = await client.project.list();
 
-      if (projectsResult.error) {
-        throw projectsResult.error;
-      }
-
-      if (!projectsResult.data || !Array.isArray(projectsResult.data)) {
-        return [];
-      }
-
-      const mappedProjects: Project[] = projectsResult.data.map(
-        (proj: any) => ({
-          id: proj.id,
-          name: proj.worktree?.split("/").pop() || "Unnamed Project",
-          path: proj.worktree || proj.id,
-        }),
-      );
-
-      return mappedProjects;
+      return projectsResult.data || [];
+    },
+    select: (data) => {
+      return data.map((proj: any) => ({
+        id: proj.id,
+        name: proj.worktree?.split("/").pop() || proj.id,
+        path: proj.worktree || proj.id,
+      }));
     },
     enabled: !!server,
   });
