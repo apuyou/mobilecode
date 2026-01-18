@@ -1,5 +1,4 @@
 import { router } from "expo-router";
-import { useMemo } from "react";
 import {
   ActivityIndicator,
   FlatList,
@@ -9,23 +8,8 @@ import {
   View,
 } from "react-native";
 
-import { useProjects } from "@/hooks/useProjects";
-import { useSessions } from "@/hooks/useSessions";
+import { useAllSessions } from "@/hooks/useAllSessions";
 import { useAppStore } from "@/stores";
-
-interface RecentSession {
-  serverId: string;
-  serverName: string;
-  projectId: string;
-  projectName: string;
-  projectIcon?: {
-    color?: string;
-    url?: string;
-  };
-  sessionId: string;
-  sessionTitle: string;
-  updatedAt: string;
-}
 
 function formatTimeAgo(dateString: string): string {
   const date = new Date(dateString);
@@ -56,54 +40,7 @@ function formatTimeAgo(dateString: string): string {
 
 export default function RecentsScreen() {
   const servers = useAppStore((s) => s.servers);
-
-  // Fetch projects for all servers
-  const projectsQueries = servers.map((server) => ({
-    server,
-    query: useProjects(server.url),
-  }));
-
-  // Fetch sessions for each project on each server
-  const sessionsQueries = projectsQueries.flatMap(({ server, query }) => {
-    const projects = query.data || [];
-    return projects.map((project) => ({
-      server,
-      project,
-      query: useSessions(server.url, project.path),
-    }));
-  });
-
-  const recentSessions = useMemo(() => {
-    const sessions: RecentSession[] = [];
-
-    sessionsQueries.forEach(({ server, project, query }) => {
-      if (!query.data) {
-        return;
-      }
-
-      query.data.forEach((session: any) => {
-        sessions.push({
-          serverId: server.id,
-          serverName: server.name,
-          projectId: project.id,
-          projectName: project.name,
-          projectIcon: project.icon,
-          sessionId: session.id,
-          sessionTitle: session.title,
-          updatedAt: session.updatedAt,
-        });
-      });
-    });
-
-    return sessions.sort(
-      (a, b) =>
-        new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
-    );
-  }, [sessionsQueries]);
-
-  const isLoading =
-    projectsQueries.some((q) => q.query.isLoading) ||
-    sessionsQueries.some((q) => q.query.isLoading);
+  const { recentSessions, isLoading } = useAllSessions(servers);
 
   return (
     <FlatList
