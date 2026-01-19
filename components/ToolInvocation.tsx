@@ -40,18 +40,21 @@ export function ToolInvocation({
     <View className="mt-2 bg-gray-50 dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
       <Pressable
         onPress={() => setExpanded(!expanded)}
-        className="p-3 flex-row items-center justify-between"
+        className="p-3 flex-row items-center justify-between gap-2"
       >
-        <View className="flex-row items-center flex-1">
-          <Text className="text-sm font-semibold text-gray-900 dark:text-gray-100 mr-2">
+        <View className="flex-row items-center gap-2 flex-shrink">
+          <Text
+            className="text-sm font-semibold text-gray-900 dark:text-gray-100"
+            numberOfLines={1}
+          >
             {toolName}
           </Text>
           <StatusBadge status={badgeStatus()} />
         </View>
         {expanded ? (
-          <ChevronUp size={16} color="#6b7280" />
+          <ChevronUp size={16} color="#6b7280" className="flex-shrink-0" />
         ) : (
-          <ChevronDown size={16} color="#6b7280" />
+          <ChevronDown size={16} color="#6b7280" className="flex-shrink-0" />
         )}
       </Pressable>
 
