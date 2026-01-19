@@ -52,13 +52,15 @@ export function useAllSessions(servers: Server[]) {
         return result.data;
       },
       select: (data: Session[] | undefined) => {
-        return data?.map((s) => ({
-          id: s.id,
-          title: s.title || `Session ${s.id.slice(0, 8)}`,
-          updatedAt: new Date(s.time.updated).toISOString(),
-          projectID: s.projectID,
-          directory: s.directory,
-        }));
+        return data
+          ?.filter((s) => !s.time.archived)
+          .map((s) => ({
+            id: s.id,
+            title: s.title || `Session ${s.id.slice(0, 8)}`,
+            updatedAt: new Date(s.time.updated).toISOString(),
+            projectID: s.projectID,
+            directory: s.directory,
+          }));
       },
     })),
     combine: (results) => {
