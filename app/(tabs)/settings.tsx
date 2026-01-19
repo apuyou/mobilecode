@@ -1,4 +1,5 @@
 import * as Application from "expo-application";
+import * as Updates from "expo-updates";
 import { ExternalLink, Info, Trash2 } from "lucide-react-native";
 import {
   Alert,
@@ -17,6 +18,7 @@ export default function SettingsScreen() {
 
   const version = Application.nativeApplicationVersion || "Unknown";
   const buildNumber = Application.nativeBuildVersion || "Unknown";
+  const updateId = Updates.updateId || "embedded";
 
   const handleClearData = () => {
     Alert.alert(
@@ -51,10 +53,10 @@ export default function SettingsScreen() {
             MobileCode
           </Text>
           <Text className="text-gray-500 dark:text-gray-400 text-sm">
-            Version {version} ({buildNumber})
+            Version: {version} ({buildNumber})
           </Text>
           <Text className="text-gray-500 dark:text-gray-400 text-sm mt-1">
-            Remote control for OpenCode instances
+            Update: {updateId}
           </Text>
         </View>
 
