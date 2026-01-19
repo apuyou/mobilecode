@@ -31,11 +31,11 @@ export function SessionSettingsContent({
       return result.data?.all || [];
     },
     select: (providers) => {
-      const allModels: Array<{
+      const allModels: {
         id: string;
         providerID: string;
         name: string;
-      }> = [];
+      }[] = [];
 
       providers.forEach((provider) => {
         Object.values(provider.models || {}).forEach((model) => {

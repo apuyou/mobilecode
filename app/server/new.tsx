@@ -147,7 +147,7 @@ export default function AddServerScreen() {
             <Text className="text-sm text-gray-600 dark:text-gray-400 leading-5">
               Enter the URL where your OpenCode server is running. This is
               typically http://localhost:4001 on your development machine, or
-              use your machine's IP address if connecting over a network.
+              use your machine&apos;s IP address if connecting over a network.
             </Text>
           </View>
         </View>

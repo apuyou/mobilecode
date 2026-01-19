@@ -1,5 +1,5 @@
 import { View, Text, Pressable } from "react-native";
-import { Server as ServerIcon, WifiOff } from "lucide-react-native";
+import { Server as ServerIcon } from "lucide-react-native";
 
 import type { Server } from "@/stores";
 
