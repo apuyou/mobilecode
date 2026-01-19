@@ -26,8 +26,5 @@ jobs:
       - name: Install dependencies
         run: bun install --frozen-lockfile
 
-      - name: Build for iOS
-        run: eas build --platform ios --non-interactive
-
-      - name: Build for Android
-        run: eas build --platform android --non-interactive
+      - name: Build for iOS and Android
+        run: eas build --platform all --non-interactive --no-wait
