@@ -26,9 +26,8 @@ export function MessageInput({ onSend, disabled }: MessageInputProps) {
         className="flex-1 bg-gray-100 dark:bg-gray-900 rounded-full px-4 py-3 text-gray-900 dark:text-gray-100 mr-2"
         multiline
         maxLength={10000}
-        editable={!disabled}
-        onSubmitEditing={handleSend}
-        submitBehavior="blurAndSubmit"
+        onSubmitEditing={disabled ? undefined : handleSend}
+        submitBehavior="submit"
       />
       <Pressable
         onPress={handleSend}

@@ -98,7 +98,7 @@ export function SessionChatContent({
 
       const messageID = Identifier.ascending("message");
       const partID = Identifier.ascending("part");
-      const result = await client.session.prompt({
+      const result = await client.session.promptAsync({
         path: { id: sessionId },
         body: {
           messageID,
