@@ -40,10 +40,6 @@ export function SessionChatContent({
       const client = createClient(server.url);
       const result = await client.project.list();
 
-      if (result.error) {
-        throw result.error;
-      }
-
       return result.data;
     },
   });
@@ -117,10 +113,6 @@ export function SessionChatContent({
           ],
         },
       });
-
-      if (result.error) {
-        throw result.error;
-      }
 
       return result.data;
     },

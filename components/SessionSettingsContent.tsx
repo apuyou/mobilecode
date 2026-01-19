@@ -24,10 +24,6 @@ export function SessionSettingsContent({
       const client = createClient(server.url);
       const result = await client.provider.list();
 
-      if (result.error) {
-        throw result.error;
-      }
-
       return result.data?.all || [];
     },
     select: (providers) => {

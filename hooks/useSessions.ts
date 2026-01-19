@@ -11,10 +11,6 @@ export function useSessions(serverUrl: string, projectPath?: string) {
         query: projectPath ? { directory: projectPath } : undefined,
       });
 
-      if (result.error) {
-        throw result.error;
-      }
-
       return result.data || [];
     },
     select: (data) => {
