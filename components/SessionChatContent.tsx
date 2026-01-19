@@ -59,7 +59,7 @@ export function SessionChatContent({
     queryFn: async () => {
       const client = createClient(server.url, projectPath);
       const result = await client.session.get({
-        path: { id: sessionId },
+        sessionID: sessionId,
       });
 
       return result.data;
@@ -99,19 +99,17 @@ export function SessionChatContent({
       const messageID = Identifier.ascending("message");
       const partID = Identifier.ascending("part");
       const result = await client.session.promptAsync({
-        path: { id: sessionId },
-        body: {
-          messageID,
-          agent: "build",
-          model: currentModel,
-          parts: [
-            {
-              id: partID,
-              type: "text",
-              text,
-            },
-          ],
-        },
+        sessionID: sessionId,
+        messageID,
+        agent: "build",
+        model: currentModel,
+        parts: [
+          {
+            id: partID,
+            type: "text",
+            text,
+          },
+        ],
       });
 
       return result.data;

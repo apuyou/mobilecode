@@ -8,7 +8,7 @@ export function useSessions(serverUrl: string, projectPath?: string) {
     queryFn: async () => {
       const client = createClient(serverUrl, projectPath);
       const result = await client.session.list({
-        query: projectPath ? { directory: projectPath } : undefined,
+        directory: projectPath,
       });
 
       return result.data || [];

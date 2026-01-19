@@ -1,8 +1,8 @@
 import { useQueries } from "@tanstack/react-query";
+import { Project, Session } from "@opencode-ai/sdk/v2";
 
 import { createClient } from "@/lib/opencode-client";
 import { Server } from "@/stores";
-import { Project, Session } from "@opencode-ai/sdk";
 
 export function useAllSessions(servers: Server[]) {
   const projects = useQueries({
@@ -46,7 +46,7 @@ export function useAllSessions(servers: Server[]) {
       queryFn: async () => {
         const client = createClient(server.url, project.path);
         const result = await client.session.list({
-          query: project.path ? { directory: project.path } : undefined,
+          directory: project.path,
         });
 
         return result.data;

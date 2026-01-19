@@ -4,10 +4,10 @@ const { withNativeWind } = require("nativewind/metro");
 const config = getDefaultConfig(__dirname);
 
 config.resolver.resolveRequest = (context, moduleName, platform) => {
-  if (moduleName === "@opencode-ai/sdk") {
+  if (moduleName === "@opencode-ai/sdk/v2") {
     return context.resolveRequest(
       context,
-      "@opencode-ai/sdk/dist/client",
+      "@opencode-ai/sdk/dist/v2/client",
       platform,
     );
   }

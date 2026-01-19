@@ -8,8 +8,8 @@ export function useSessionMessages(serverUrl: string, sessionId: string) {
     queryFn: async () => {
       const client = createClient(serverUrl);
       const messagesResult = await client.session.messages({
-        path: { id: sessionId },
-        query: { limit: 100 },
+        sessionID: sessionId,
+        limit: 100,
       });
 
       return messagesResult.data || [];

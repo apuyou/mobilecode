@@ -1,5 +1,5 @@
 import { Text, View } from "react-native";
-import type { Part } from "@opencode-ai/sdk";
+import type { Part } from "@opencode-ai/sdk/v2";
 
 import { ToolInvocation } from "./ToolInvocation";
 
