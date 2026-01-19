@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { router, Stack } from "expo-router";
 import { Settings } from "lucide-react-native";
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 import {
   ActivityIndicator,
   FlatList,
@@ -33,7 +33,6 @@ export function SessionChatContent({
 }: SessionChatContentProps) {
   const queryClient = useQueryClient();
   const flatListRef = useRef<FlatList>(null);
-  const hasScrolledToEndRef = useRef(false);
 
   const { data: projectsData } = useQuery({
     queryKey: ["server", server.url, "projects"],
@@ -81,9 +80,11 @@ export function SessionChatContent({
     error,
   } = useSessionMessages(server.url, sessionId);
 
-  const latestUserMessage = [...messages]
-    .reverse()
-    .find((m) => m.info.role === "user");
+  const sortedMessages = [...messages]
+    .sort((a, b) => a.info.id.localeCompare(b.info.id))
+    .reverse();
+
+  const latestUserMessage = sortedMessages.find((m) => m.info.role === "user");
   const currentModel =
     latestUserMessage?.info.role === "user"
       ? {
@@ -130,14 +131,6 @@ export function SessionChatContent({
     },
   });
 
-  useEffect(() => {
-    if (messages.length > 0 && hasScrolledToEndRef.current) {
-      setTimeout(() => {
-        flatListRef.current?.scrollToEnd({ animated: true });
-      }, 100);
-    }
-  }, [messages.length]);
-
   return (
     <>
       <Stack.Screen
@@ -169,25 +162,11 @@ export function SessionChatContent({
           <View className="flex-1 bg-gray-50 dark:bg-gray-900">
             <FlatList
               ref={flatListRef}
-              data={messages}
+              data={sortedMessages}
               keyExtractor={(item) => item.info.id}
+              inverted={true}
               renderItem={({ item }) => <ChatMessage message={item} />}
               contentContainerStyle={{ padding: 16, flexGrow: 1 }}
-              initialScrollIndex={
-                messages.length > 0 ? messages.length - 1 : undefined
-              }
-              onScrollToIndexFailed={() => {
-                setTimeout(() => {
-                  if (messages.length > 0) {
-                    flatListRef.current?.scrollToEnd({ animated: false });
-                  }
-                }, 100);
-              }}
-              onLayout={() => {
-                if (!hasScrolledToEndRef.current && messages.length > 0) {
-                  hasScrolledToEndRef.current = true;
-                }
-              }}
               ListEmptyComponent={
                 isLoading ? (
                   <View className="flex-1 items-center justify-center">
@@ -210,11 +189,6 @@ export function SessionChatContent({
                   </View>
                 )
               }
-              onContentSizeChange={() => {
-                if (hasScrolledToEndRef.current) {
-                  flatListRef.current?.scrollToEnd({ animated: true });
-                }
-              }}
             />
 
             <MessageInput
