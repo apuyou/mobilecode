@@ -1,13 +1,13 @@
+import * as Application from "expo-application";
+import { ExternalLink, Info, Trash2 } from "lucide-react-native";
 import {
-  View,
-  Text,
-  ScrollView,
-  Pressable,
   Alert,
   Linking,
+  Pressable,
+  ScrollView,
+  Text,
+  View,
 } from "react-native";
-import Constants from "expo-constants";
-import { Trash2, ExternalLink, Info } from "lucide-react-native";
 
 import { useAppStore } from "@/stores";
 
@@ -15,11 +15,8 @@ export default function SettingsScreen() {
   const servers = useAppStore((s) => s.servers);
   const clearAllData = useAppStore((s) => s.clearAllData);
 
-  const version = Constants.expoConfig?.version || "Unknown";
-  const buildNumber =
-    Constants.expoConfig?.ios?.buildNumber ||
-    Constants.expoConfig?.android?.versionCode?.toString() ||
-    "Unknown";
+  const version = Application.nativeApplicationVersion || "Unknown";
+  const buildNumber = Application.nativeBuildVersion || "Unknown";
 
   const handleClearData = () => {
     Alert.alert(
