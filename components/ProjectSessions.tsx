@@ -1,10 +1,12 @@
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { router, useLocalSearchParams } from "expo-router";
-import { ChevronDown, ChevronUp, Folder } from "lucide-react-native";
+import { ChevronDown, ChevronUp, Folder, Plus } from "lucide-react-native";
 import { useState } from "react";
 import { ActivityIndicator, Pressable, Text, View } from "react-native";
 
 import { SessionCard } from "@/components/SessionCard";
 import { useSessions } from "@/hooks/useSessions";
+import { createClient } from "@/lib/opencode-client";
 
 interface Project {
   id: string;
@@ -20,11 +22,37 @@ interface ProjectSessionsProps {
 export function ProjectSessions({ project, serverUrl }: ProjectSessionsProps) {
   const { serverId } = useLocalSearchParams<{ serverId: string }>();
   const [showAll, setShowAll] = useState(false);
+  const queryClient = useQueryClient();
 
   const { data: sessions = [], isLoading } = useSessions(
     serverUrl,
     project.path,
   );
+
+  const createSessionMutation = useMutation({
+    mutationFn: async () => {
+      const client = createClient(serverUrl, project.path);
+      const result = await client.session.create({
+        directory: project.path,
+      });
+
+      if (result.error) {
+        throw result.error;
+      }
+
+      return result.data;
+    },
+    onSuccess: (session) => {
+      queryClient.invalidateQueries({
+        queryKey: ["server", serverUrl, "project", project.path, "sessions"],
+      });
+      if (session) {
+        router.push(
+          `/server/${serverId}/project/${project.id}/session/${session.id}`,
+        );
+      }
+    },
+  });
 
   if (isLoading) {
     return (
@@ -47,10 +75,6 @@ export function ProjectSessions({ project, serverUrl }: ProjectSessionsProps) {
     );
   }
 
-  if (sessions.length === 0) {
-    return null;
-  }
-
   const displayedSessions = showAll ? sessions : sessions.slice(0, 3);
   const hasMore = sessions.length > 3;
 
@@ -68,6 +92,22 @@ export function ProjectSessions({ project, serverUrl }: ProjectSessionsProps) {
           {project.path}
         </Text>
       </View>
+
+      {/* New Session Button */}
+      <Pressable
+        onPress={() => createSessionMutation.mutate()}
+        disabled={createSessionMutation.isPending}
+        className="bg-blue-50 dark:bg-blue-900/30 rounded-xl p-3 flex-row items-center mb-2"
+      >
+        {createSessionMutation.isPending ? (
+          <ActivityIndicator size="small" color="#3b82f6" />
+        ) : (
+          <Plus size={18} color="#3b82f6" />
+        )}
+        <Text className="text-blue-600 dark:text-blue-400 ml-2 text-sm font-medium">
+          New Session
+        </Text>
+      </Pressable>
 
       {/* Sessions for this project */}
       {displayedSessions.map((session) => (
