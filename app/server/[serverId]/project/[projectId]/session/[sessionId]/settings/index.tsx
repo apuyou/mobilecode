@@ -5,8 +5,9 @@ import { SessionSettingsContent } from "@/components/SessionSettingsContent";
 import { useAppStore } from "@/stores";
 
 export default function SessionSettingsScreen() {
-  const { serverId, sessionId } = useLocalSearchParams<{
+  const { serverId, projectId, sessionId } = useLocalSearchParams<{
     serverId: string;
+    projectId: string;
     sessionId: string;
   }>();
   const servers = useAppStore((s) => s.servers);
@@ -22,5 +23,11 @@ export default function SessionSettingsScreen() {
     );
   }
 
-  return <SessionSettingsContent server={server} sessionId={sessionId} />;
+  return (
+    <SessionSettingsContent
+      server={server}
+      projectId={projectId}
+      sessionId={sessionId}
+    />
+  );
 }

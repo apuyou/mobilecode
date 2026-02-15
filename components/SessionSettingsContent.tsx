@@ -1,6 +1,6 @@
-import { useQuery } from "@tanstack/react-query";
-import { Stack } from "expo-router";
-import { ScrollView, Text, View } from "react-native";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { router, Stack } from "expo-router";
+import { Alert, Pressable, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { useSessionMessages } from "@/hooks/useSessionMessages";
@@ -9,14 +9,46 @@ import { Server } from "@/stores";
 
 interface SessionSettingsContentProps {
   server: Server;
+  projectId: string;
   sessionId: string;
 }
 
 export function SessionSettingsContent({
   server,
+  projectId,
   sessionId,
 }: SessionSettingsContentProps) {
+  const queryClient = useQueryClient();
   const { data: messages = [] } = useSessionMessages(server.url, sessionId);
+
+  const { data: projectsData } = useQuery({
+    queryKey: ["server", server.url, "projects"],
+    queryFn: async () => {
+      const client = createClient(server.url);
+      const result = await client.project.list();
+
+      return result.data;
+    },
+  });
+
+  const project = projectsData?.find((p) => p.id === projectId);
+  const projectPath = project?.worktree;
+
+  const archiveMutation = useMutation({
+    mutationFn: async () => {
+      const client = createClient(server.url, projectPath);
+      await client.session.update({
+        sessionID: sessionId,
+        time: { archived: Date.now() },
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["server", server.url],
+      });
+      router.dismiss(2);
+    },
+  });
 
   const { data: models = [] } = useQuery({
     queryKey: ["server", server.url, "providers"],
@@ -84,6 +116,31 @@ export function SessionSettingsContent({
                 {selectedModel?.name || "big-pickle"}
               </Text>
             </View>
+
+            <Pressable
+              onPress={() => {
+                Alert.alert(
+                  "Archive Session",
+                  "Are you sure you want to archive this session?",
+                  [
+                    { text: "Cancel", style: "cancel" },
+                    {
+                      text: "Archive",
+                      style: "destructive",
+                      onPress: () => archiveMutation.mutate(),
+                    },
+                  ],
+                );
+              }}
+              disabled={archiveMutation.isPending}
+              className="mt-4 bg-red-500 rounded-xl p-4 items-center opacity-100 disabled:opacity-50"
+            >
+              <Text className="text-base font-medium text-white">
+                {archiveMutation.isPending
+                  ? "Archiving..."
+                  : "Archive Session"}
+              </Text>
+            </Pressable>
           </View>
         </ScrollView>
       </SafeAreaView>
