@@ -1,6 +1,7 @@
-import { Text, View } from "react-native";
+import { View } from "react-native";
 import type { Part } from "@opencode-ai/sdk/v2";
 
+import { MarkdownContent } from "./MarkdownContent";
 import { ToolInvocation } from "./ToolInvocation";
 
 interface ChatMessagePartProps {
@@ -22,13 +23,7 @@ export function ChatMessagePart({ part, isUser }: ChatMessagePartProps) {
             : "bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700"
         }`}
       >
-        <Text
-          className={`text-base ${
-            isUser ? "text-white" : "text-gray-900 dark:text-gray-100"
-          }`}
-        >
-          {part.text.trim()}
-        </Text>
+        <MarkdownContent content={part.text.trim()} isUser={isUser} />
       </View>
     );
   }
