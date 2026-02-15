@@ -1,5 +1,5 @@
-import { useMemo } from "react";
-import { Platform, useColorScheme } from "react-native";
+import React, { useMemo } from "react";
+import { Platform, Text, useColorScheme } from "react-native";
 import Markdown from "react-native-markdown-display";
 
 const baseFontSize = 15;
@@ -579,6 +579,99 @@ export function MarkdownContent({ content, isUser }: MarkdownContentProps) {
   }, [isUser, colorScheme]);
 
   return (
-    <Markdown style={styles}>{content}</Markdown>
+    <Markdown
+      style={styles}
+      rules={{
+        body: (node, children) => (
+          <Text key={node.key} style={styles.body} selectable={true}>
+            {children}
+          </Text>
+        ),
+        textgroup: (node, children) => (
+          <React.Fragment key={node.key}>{children}</React.Fragment>
+        ),
+        paragraph: (node, children) => (
+          <Text key={node.key} style={styles.paragraph}>
+            {children}
+            {"\n"}
+          </Text>
+        ),
+        heading1: (node, children) => (
+          <Text key={node.key} style={styles.heading1}>
+            {children}
+            {"\n"}
+          </Text>
+        ),
+        heading2: (node, children) => (
+          <Text key={node.key} style={styles.heading2}>
+            {children}
+            {"\n"}
+          </Text>
+        ),
+        heading3: (node, children) => (
+          <Text key={node.key} style={styles.heading3}>
+            {children}
+            {"\n"}
+          </Text>
+        ),
+        heading4: (node, children) => (
+          <Text key={node.key} style={styles.heading4}>
+            {children}
+            {"\n"}
+          </Text>
+        ),
+        heading5: (node, children) => (
+          <Text key={node.key} style={styles.heading5}>
+            {children}
+            {"\n"}
+          </Text>
+        ),
+        heading6: (node, children) => (
+          <Text key={node.key} style={styles.heading6}>
+            {children}
+            {"\n"}
+          </Text>
+        ),
+        blockquote: (node, children) => (
+          <Text key={node.key} style={styles.blockquote}>
+            {children}
+          </Text>
+        ),
+        code_block: (node) => (
+          <Text key={node.key} style={styles.code_block}>
+            {node.content}
+          </Text>
+        ),
+        fence: (node) => (
+          <Text key={node.key} style={styles.fence}>
+            {node.content}
+          </Text>
+        ),
+        bullet_list: (node, children) => (
+          <Text key={node.key} style={styles.bullet_list}>
+            {children}
+          </Text>
+        ),
+        ordered_list: (node, children) => (
+          <Text key={node.key} style={styles.ordered_list}>
+            {children}
+          </Text>
+        ),
+        list_item: (node, children, parent) => {
+          const isOrdered = parent.some((el) => el.type === "ordered_list");
+          const bullet = isOrdered ? `${node.index + 1}. ` : "• ";
+
+          return (
+            <Text key={node.key} style={styles.list_item}>
+              {bullet}
+              {children}
+              {"\n"}
+            </Text>
+          );
+        },
+      }}
+    >
+      {content}
+    </Markdown>
   );
 }
