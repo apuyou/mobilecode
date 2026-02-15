@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.3",
-    "@opencode-ai/sdk": "^1.1.26",
+    "@opencode-ai/sdk": "^1.2.5",
     "@react-navigation/native": "^7.1.8",
     "@tanstack/react-query": "^5.90.18",
     "expo": "~54.0.33",

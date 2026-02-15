@@ -1,3 +1,7 @@
+# Package manager
+
+- Always use bun as the package manager (not npm, yarn, or pnpm)
+
 # Code style
 
 - Dot use single-line condition and statement, always use brackets
