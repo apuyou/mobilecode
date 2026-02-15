@@ -53,7 +53,7 @@ export function useAllSessions(servers: Server[]) {
       },
       select: (data: Session[] | undefined) => {
         return data
-          ?.filter((s) => !s.time.archived)
+          ?.filter((s) => !s.parentID && !s.time.archived)
           .map((s) => ({
             id: s.id,
             title: s.title || `Session ${s.id.slice(0, 8)}`,

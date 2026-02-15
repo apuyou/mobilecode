@@ -15,7 +15,7 @@ export function useSessions(serverUrl: string, projectPath?: string) {
     },
     select: (data) => {
       return data
-        .filter((s) => !s.time.archived)
+        .filter((s) => !s.parentID && !s.time.archived)
         .map((s) => ({
           id: s.id,
           title: s.title || `Session ${s.id.slice(0, 8)}`,
