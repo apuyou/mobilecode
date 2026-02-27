@@ -83,6 +83,26 @@ function RootLayoutNav() {
                 title: "Chat",
               }}
             />
+            <Stack.Screen
+              name="picker/agent"
+              options={{
+                presentation: "formSheet",
+                sheetAllowedDetents: [0.35],
+                sheetGrabberVisible: true,
+                headerShown: false,
+                title: "Select Mode",
+              }}
+            />
+            <Stack.Screen
+              name="picker/model"
+              options={{
+                presentation: "formSheet",
+                sheetAllowedDetents: [0.5, 0.75],
+                sheetGrabberVisible: true,
+                headerShown: false,
+                title: "Select Model",
+              }}
+            />
           </Stack>
         </ThemeProvider>
       </QueryClientProvider>

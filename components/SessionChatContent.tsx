@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { router, Stack } from "expo-router";
 import { Settings } from "lucide-react-native";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import {
   ActivityIndicator,
   FlatList,
@@ -15,10 +15,14 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import { ChatMessage } from "@/components/ChatMessage";
 import { MessageInput } from "@/components/MessageInput";
+import { useAgents } from "@/hooks/useAgents";
+import { useModels } from "@/hooks/useModels";
 import { useSessionMessages } from "@/hooks/useSessionMessages";
+
 import { Identifier } from "@/lib/id";
 import { createClient } from "@/lib/opencode-client";
 import { Server } from "@/stores";
+import { usePickerStore } from "@/stores/picker";
 
 interface SessionChatContentProps {
   server: Server;
@@ -33,6 +37,12 @@ export function SessionChatContent({
 }: SessionChatContentProps) {
   const queryClient = useQueryClient();
   const flatListRef = useRef<FlatList>(null);
+
+  const selectedAgent = usePickerStore((s) => s.selectedAgent);
+  const selectedModel = usePickerStore((s) => s.selectedModel);
+  const setAgents = usePickerStore((s) => s.setAgents);
+  const setModels = usePickerStore((s) => s.setModels);
+  const setSelectedModel = usePickerStore((s) => s.setSelectedModel);
 
   const { data: projectsData } = useQuery({
     queryKey: ["server", server.url, "projects"],
@@ -76,6 +86,18 @@ export function SessionChatContent({
     error,
   } = useSessionMessages(server.url, sessionId);
 
+  const { data: agents = [] } = useAgents(server.url);
+  const { data: models = [] } = useModels(server.url);
+
+  // Sync agents and models to the picker store
+  useEffect(() => {
+    setAgents(agents);
+  }, [agents, setAgents]);
+
+  useEffect(() => {
+    setModels(models);
+  }, [models, setModels]);
+
   const sortedMessages = [...messages]
     .sort((a, b) => a.info.id.localeCompare(b.info.id))
     .reverse();
@@ -92,6 +114,32 @@ export function SessionChatContent({
           providerID: "opencode",
         };
 
+  // Initialize selected model from the session's last message
+  const initialModelSet = useRef(false);
+  useEffect(() => {
+    if (initialModelSet.current || models.length === 0) {
+      return;
+    }
+
+    const matchFromMessage = models.find(
+      (m) =>
+        m.id === currentModel.modelID &&
+        m.providerID === currentModel.providerID,
+    );
+
+    if (matchFromMessage) {
+      setSelectedModel(matchFromMessage);
+      initialModelSet.current = true;
+    } else if (models.length > 0) {
+      setSelectedModel(models[0]);
+      initialModelSet.current = true;
+    }
+  }, [models, currentModel.modelID, currentModel.providerID, setSelectedModel]);
+
+  const modelForSend = selectedModel
+    ? { modelID: selectedModel.id, providerID: selectedModel.providerID }
+    : currentModel;
+
   const sendMessageMutation = useMutation({
     mutationFn: async (text: string) => {
       const client = createClient(server.url, projectPath);
@@ -101,8 +149,8 @@ export function SessionChatContent({
       const result = await client.session.promptAsync({
         sessionID: sessionId,
         messageID,
-        agent: "build",
-        model: currentModel,
+        agent: selectedAgent,
+        model: modelForSend,
         parts: [
           {
             id: partID,
@@ -184,6 +232,8 @@ export function SessionChatContent({
             <MessageInput
               onSend={(text) => sendMessageMutation.mutate(text)}
               disabled={sendMessageMutation.isPending}
+              selectedAgent={selectedAgent}
+              selectedModel={selectedModel}
             />
           </View>
         </KeyboardAvoidingView>
