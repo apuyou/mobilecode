@@ -16,16 +16,15 @@
 
 ---
 
-<!--<p align="center">
-  <img src=".github/screenshots/screenshot-1.png" width="250" alt="Screenshot 1" />
+<p align="center">
+  <img src=".github/screenshots/screenshot1.png" width="250" alt="Recent Sessions" />
   &nbsp;&nbsp;
-  <img src=".github/screenshots/screenshot-2.png" width="250" alt="Screenshot 2" />
+  <img src=".github/screenshots/screenshot2.png" width="250" alt="Server Sessions" />
   &nbsp;&nbsp;
-  <img src=".github/screenshots/screenshot-3.png" width="250" alt="Screenshot 3" />
+  <img src=".github/screenshots/screenshot3.png" width="250" alt="Chat" />
 </p>
 
 ---
--->
 
 ## About
 
