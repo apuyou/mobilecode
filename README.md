@@ -7,11 +7,10 @@
 </p>
 
 > [!NOTE]
-> This project is **not** built by the OpenCode team and is **not** affiliated with or endorsed by [OpenCode](https://opencode.ai) in any way.
+> This project is not affiliated with or endorsed by [OpenCode](https://opencode.ai) in any way.
 
 <p align="center">
-  <a href="#download"><img src="https://img.shields.io/badge/App_Store-0D96F6?style=for-the-badge&logo=app-store&logoColor=white" alt="Download on the App Store" /></a>
-  <a href="#download"><img src="https://img.shields.io/badge/Google_Play-414141?style=for-the-badge&logo=google-play&logoColor=white" alt="Get it on Google Play" /></a>
+    <a href="https://testflight.apple.com/join/3e8MksXe">Try on TestFlight!</a>
 </p>
 
 ---
@@ -28,28 +27,29 @@
 
 ## About
 
-MobileCode lets you control your [OpenCode](https://github.com/anomalyco/opencode) sessions remotely from your phone. Connect to an OpenCode server running on your machine, browse projects and sessions, and chat with the AI coding agent -- all from your pocket.
+MobileCode lets you control your [OpenCode](https://github.com/anomalyco/opencode) sessions remotely from your phone. Connect to an OpenCode server running on your machine, browse projects and sessions, and chat with the AI coding agent — all from your pocket.
 
 OpenCode's client/server architecture makes this possible: OpenCode runs on your computer while you drive it from anywhere using MobileCode as a remote client.
 
+The app currently requires a direct network connection to your OpenCode server, so it's best used on the same local network or via a VPN like Tailscale. Future updates may include cloud sync for remote access without a VPN.
+
 ## Features
 
-- **Multi-server management** -- connect to multiple OpenCode instances, with built-in connection testing
-- **Project browsing** -- browse all projects detected by each OpenCode server
-- **Session management** -- list, create, and archive sessions across all your projects
-- **Chat interface** -- full conversational UI with Markdown rendering and tool invocation cards
-- **Agent and model selection** -- switch between agents and models on the fly
-- **Dark mode** -- follows your system theme
-- **Over-the-air updates** -- get the latest improvements without waiting for a store release
+- **Multi-server management**: connect to multiple OpenCode instances, with built-in connection testing
+- **Project browsing**: browse all projects detected by each OpenCode server
+- **Session management**: list, create, and archive sessions across all your projects
+- **Chat interface**: full conversational UI with Markdown rendering and tool invocation cards
+- **Agent and model selection**: switch between agents and models on the fly
+- **Dark mode**: follows your system theme
 
 ## Download
 
 <!-- TODO: Replace with actual store links -->
 
-| Platform | Link |
-| -------- | ---- |
-| iOS      | [App Store](https://apps.apple.com/app/mobilecode/id6757964391) |
-| Android  | [Google Play](#) |
+| Platform | Beta | Production |
+| -------- | ---- | ---------- |
+| iOS      | [TestFlight](https://testflight.apple.com/join/3e8MksXe) | Coming Soon! |
+| Android  | Coming Soon! | Coming Soon! |
 
 ## Setup
 
