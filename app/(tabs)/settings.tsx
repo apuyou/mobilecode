@@ -10,11 +10,14 @@ import {
   View,
 } from "react-native";
 
+import { useAllSessions } from "@/hooks/useAllSessions";
 import { useAppStore } from "@/stores";
 
 export default function SettingsScreen() {
   const servers = useAppStore((s) => s.servers);
   const clearAllData = useAppStore((s) => s.clearAllData);
+  const { recentSessions } = useAllSessions(servers);
+  const projectCount = new Set(recentSessions.map((s) => s.projectId)).size;
 
   const version = Application.nativeApplicationVersion || "Unknown";
   const buildNumber = Application.nativeBuildVersion || "Unknown";
@@ -71,6 +74,18 @@ export default function SettingsScreen() {
             </Text>
             <Text className="text-gray-900 dark:text-white font-medium">
               {servers.length}
+            </Text>
+          </View>
+          <View className="flex-row justify-between py-2 border-b border-gray-100 dark:border-gray-700">
+            <Text className="text-gray-600 dark:text-gray-300">Projects</Text>
+            <Text className="text-gray-900 dark:text-white font-medium">
+              {projectCount}
+            </Text>
+          </View>
+          <View className="flex-row justify-between py-2 border-b border-gray-100 dark:border-gray-700">
+            <Text className="text-gray-600 dark:text-gray-300">Sessions</Text>
+            <Text className="text-gray-900 dark:text-white font-medium">
+              {recentSessions.length}
             </Text>
           </View>
         </View>
