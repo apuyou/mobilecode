@@ -1,5 +1,5 @@
 import { View } from "react-native";
-import type { Part } from "@opencode-ai/sdk/v2";
+import type { Part, ToolPart } from "@opencode-ai/sdk/v2";
 
 import { MarkdownContent } from "./MarkdownContent";
 import { ToolInvocation } from "./ToolInvocation";
@@ -30,14 +30,9 @@ export function ChatMessagePart({ part, isUser }: ChatMessagePartProps) {
 
   if (part.type === "tool") {
     return (
-      <ToolInvocation
-        toolName={part.tool || "Unknown Tool"}
-        input={part.state?.input}
-        output={
-          part.state?.status === "completed" ? part.state.output : undefined
-        }
-        status={part.state?.status || "unknown"}
-      />
+      <View className="w-full">
+        <ToolInvocation part={part as ToolPart} />
+      </View>
     );
   }
 
