@@ -17,8 +17,8 @@ import { ChatMessage } from "@/components/ChatMessage";
 import { MessageInput } from "@/components/MessageInput";
 import { useAgents } from "@/hooks/useAgents";
 import { useModels } from "@/hooks/useModels";
+import { useProjects } from "@/hooks/useProjects";
 import { useSessionMessages } from "@/hooks/useSessionMessages";
-
 import { Identifier } from "@/lib/id";
 import { createClient } from "@/lib/opencode-client";
 import { Server } from "@/stores";
@@ -44,18 +44,9 @@ export function SessionChatContent({
   const setModels = usePickerStore((s) => s.setModels);
   const setSelectedModel = usePickerStore((s) => s.setSelectedModel);
 
-  const { data: projectsData } = useQuery({
-    queryKey: ["server", server.url, "projects"],
-    queryFn: async () => {
-      const client = createClient(server.url);
-      const result = await client.project.list();
+  const { data: projects = [] } = useProjects(server.url);
 
-      return result.data;
-    },
-  });
-
-  const project = projectsData?.find((p) => p.id === projectId);
-  const projectPath = project?.worktree;
+  const projectPath = projects.find((p) => p.id === projectId)?.worktree;
 
   const { data: session } = useQuery({
     queryKey: [

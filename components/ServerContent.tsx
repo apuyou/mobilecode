@@ -1,4 +1,4 @@
-import { useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { router, useNavigation } from "expo-router";
 import { Trash2 } from "lucide-react-native";
 import { useEffect } from "react";
@@ -12,7 +12,7 @@ import {
 } from "react-native";
 
 import { ProjectSessions } from "@/components/ProjectSessions";
-import { useProjects } from "@/hooks/useProjects";
+import { createClient } from "@/lib/opencode-client";
 import { Server, useAppStore } from "@/stores";
 
 interface ServerContentProps {
@@ -29,7 +29,21 @@ export function ServerContent({ server }: ServerContentProps) {
     isLoading,
     isFetching,
     error,
-  } = useProjects(server.url);
+  } = useQuery({
+    queryKey: ["server", server.url, "projects"],
+    queryFn: async () => {
+      const client = createClient(server.url);
+      const result = await client.project.list();
+
+      return result.data || [];
+    },
+    select: (data) =>
+      data.map((proj) => ({
+        id: proj.id,
+        name: proj.worktree?.split("/").pop() || proj.id,
+        path: proj.worktree || proj.id,
+      })),
+  });
 
   useEffect(() => {
     navigation.setOptions({

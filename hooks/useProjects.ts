@@ -15,16 +15,5 @@ export function useProjects(serverUrl: string) {
 
       return projectsResult.data || [];
     },
-    select: (data) => {
-      return data.map((proj) => ({
-        id: proj.id,
-        name: proj.worktree?.split("/").pop() || proj.id,
-        path: proj.worktree || proj.id,
-        icon:
-          "icon" in proj
-            ? (proj.icon as { color?: string; url?: string })
-            : undefined,
-      }));
-    },
   });
 }

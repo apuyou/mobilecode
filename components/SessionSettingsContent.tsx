@@ -3,6 +3,7 @@ import { router, Stack } from "expo-router";
 import { Alert, Pressable, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { useProjects } from "@/hooks/useProjects";
 import { useSessionMessages } from "@/hooks/useSessionMessages";
 import { createClient } from "@/lib/opencode-client";
 import { Server } from "@/stores";
@@ -20,19 +21,9 @@ export function SessionSettingsContent({
 }: SessionSettingsContentProps) {
   const queryClient = useQueryClient();
   const { data: messages = [] } = useSessionMessages(server.url, sessionId);
+  const { data: projects = [] } = useProjects(server.url);
 
-  const { data: projectsData } = useQuery({
-    queryKey: ["server", server.url, "projects"],
-    queryFn: async () => {
-      const client = createClient(server.url);
-      const result = await client.project.list();
-
-      return result.data;
-    },
-  });
-
-  const project = projectsData?.find((p) => p.id === projectId);
-  const projectPath = project?.worktree;
+  const projectPath = projects.find((p) => p.id === projectId)?.worktree;
 
   const archiveMutation = useMutation({
     mutationFn: async () => {
