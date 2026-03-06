@@ -32,7 +32,9 @@ export default function RecentsScreen() {
       className="flex-1 bg-gray-50 dark:bg-gray-900"
       contentContainerStyle={{ padding: 16, flexGrow: 1 }}
       data={recentSessions}
-      keyExtractor={(item) => `${item.serverId}-${item.sessionId}`}
+      keyExtractor={(item) =>
+        `${item.serverId}-${item.projectId}-${item.sessionId}`
+      }
       refreshControl={
         <RefreshControl refreshing={isLoading} onRefresh={handleRefresh} />
       }
