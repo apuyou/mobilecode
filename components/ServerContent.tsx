@@ -35,6 +35,10 @@ export function ServerContent({ server }: ServerContentProps) {
       const client = createClient(server.url);
       const result = await client.project.list();
 
+      if (result.error) {
+        throw result.error;
+      }
+
       return result.data || [];
     },
     select: (data) =>

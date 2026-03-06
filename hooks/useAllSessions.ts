@@ -12,9 +12,13 @@ export function useAllSessions(servers: Server[]) {
         const client = createClient(server.url);
         const projectsResult = await client.project.list();
 
-        return projectsResult.data;
+        if (projectsResult.error) {
+          throw projectsResult.error;
+        }
+
+        return projectsResult.data || [];
       },
-      select: (data: Project[] | undefined) => {
+      select: (data: Project[]) => {
         return data?.map((proj) => ({
           id: proj.id,
           name: proj.worktree?.split("/").pop() || proj.id,
@@ -49,9 +53,13 @@ export function useAllSessions(servers: Server[]) {
           directory: project.path,
         });
 
-        return result.data;
+        if (result.error) {
+          throw result.error;
+        }
+
+        return result.data || [];
       },
-      select: (data: Session[] | undefined) => {
+      select: (data: Session[]) => {
         return data
           ?.filter((s) => !s.parentID && !s.time.archived)
           .map((s) => ({
