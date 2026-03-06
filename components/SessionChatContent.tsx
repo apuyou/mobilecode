@@ -42,6 +42,7 @@ export function SessionChatContent({
   const selectedModel = usePickerStore((s) => s.selectedModel);
   const setAgents = usePickerStore((s) => s.setAgents);
   const setModels = usePickerStore((s) => s.setModels);
+  const setSelectedAgent = usePickerStore((s) => s.setSelectedAgent);
   const setSelectedModel = usePickerStore((s) => s.setSelectedModel);
 
   const { data: projects = [] } = useProjects(server.url);
@@ -104,6 +105,23 @@ export function SessionChatContent({
           modelID: "big-pickle",
           providerID: "opencode",
         };
+
+  // Initialize selected agent from the session's last message
+  const initialAgentSet = useRef(false);
+  useEffect(() => {
+    if (initialAgentSet.current || agents.length === 0 || !latestUserMessage) {
+      return;
+    }
+
+    const agentFromMessage = latestUserMessage.info.role === "user"
+      ? latestUserMessage.info.agent
+      : undefined;
+
+    if (agentFromMessage && agents.some((a) => a.name === agentFromMessage)) {
+      setSelectedAgent(agentFromMessage);
+      initialAgentSet.current = true;
+    }
+  }, [agents, latestUserMessage, setSelectedAgent]);
 
   // Initialize selected model from the session's last message
   const initialModelSet = useRef(false);
