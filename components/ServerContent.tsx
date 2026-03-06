@@ -82,7 +82,9 @@ export function ServerContent({ server }: ServerContentProps) {
       data={projects}
       keyExtractor={(item) => item.id}
       renderItem={({ item }) => (
-        <ProjectSessions project={item} serverUrl={server.url} />
+        <View className="bg-white dark:bg-gray-800 rounded-xl p-4 mb-4">
+          <ProjectSessions project={item} serverUrl={server.url} />
+        </View>
       )}
       refreshControl={
         <RefreshControl refreshing={isFetching} onRefresh={handleRefresh} />

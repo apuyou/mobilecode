@@ -56,7 +56,7 @@ export function ProjectSessions({ project, serverUrl }: ProjectSessionsProps) {
 
   if (isLoading) {
     return (
-      <View className="mb-6">
+      <View>
         <View className="mb-3">
           <View className="flex-row items-center">
             <Folder size={16} color="#6b7280" />
@@ -79,7 +79,7 @@ export function ProjectSessions({ project, serverUrl }: ProjectSessionsProps) {
   const hasMore = sessions.length > 3;
 
   return (
-    <View className="mb-6">
+    <View>
       {/* Project Header */}
       <View className="mb-3">
         <View className="flex-row items-center">
