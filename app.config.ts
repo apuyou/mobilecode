@@ -8,7 +8,7 @@ const bundleIdentifier = IS_DEV
 const config: ExpoConfig = {
   name: IS_DEV ? "MobileCode Dev" : "MobileCode",
   slug: "mobilecode",
-  version: "0.4",
+  version: "0.6",
   orientation: "portrait",
   icon: "./assets/images/icon.png",
   scheme: "mobilecode",
