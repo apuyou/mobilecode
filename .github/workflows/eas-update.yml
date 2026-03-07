@@ -27,3 +27,10 @@ jobs:
 
       - name: Publish update
         run: eas update --auto --non-interactive --channel=production
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+
+      - name: Upload sourcemaps
+        run: npx sentry-expo-upload-sourcemaps dist
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}

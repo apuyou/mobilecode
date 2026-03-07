@@ -13,6 +13,18 @@ import "../global.css";
 
 import { useColorScheme } from "@/components/useColorScheme";
 import { useReactQuerySetup } from "@/hooks/useReactQuerySetup";
+import * as Sentry from "@sentry/react-native";
+
+Sentry.init({
+  dsn: "https://12b7e52e3fd194e0f3e29a546a0ae470@o4511002981957632.ingest.de.sentry.io/4511002983268432",
+
+  // Adds more context data to events (IP address, cookies, user, etc.)
+  // For more information, visit: https://docs.sentry.io/platforms/react-native/data-management/data-collected/
+  sendDefaultPii: false,
+
+  // Enable Logs
+  enableLogs: false,
+});
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -33,7 +45,7 @@ export const unstable_settings = {
 
 SplashScreen.preventAutoHideAsync();
 
-export default function RootLayout() {
+export default Sentry.wrap(function RootLayout() {
   const [loaded, error] = useFonts({
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
   });
@@ -57,7 +69,7 @@ export default function RootLayout() {
   }
 
   return <RootLayoutNav />;
-}
+});
 
 function RootLayoutNav() {
   const colorScheme = useColorScheme();

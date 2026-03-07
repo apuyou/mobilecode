@@ -28,3 +28,5 @@ jobs:
 
       - name: Build and submit
         run: eas build --platform all --non-interactive --no-wait --auto-submit-with-profile=production
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}

@@ -39,7 +39,17 @@ const config: ExpoConfig = {
     output: "static",
     favicon: "./assets/images/favicon.png",
   },
-  plugins: ["expo-router", "expo-font"],
+  plugins: [
+    "expo-router",
+    "expo-font",
+    [
+      "@sentry/react-native/expo",
+      {
+        organization: "mobilecode",
+        project: "mobilecode",
+      },
+    ],
+  ],
   experiments: {
     typedRoutes: true,
     reactCompiler: true,
