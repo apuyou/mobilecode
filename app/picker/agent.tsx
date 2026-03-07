@@ -9,38 +9,31 @@ export default function AgentPickerModal() {
   const setSelectedAgent = usePickerStore((s) => s.setSelectedAgent);
 
   return (
-    <View className="flex-1 bg-white dark:bg-gray-800">
-      <View className="px-4 pt-4 pb-2">
-        <Text className="text-lg font-semibold text-gray-900 dark:text-white">
-          Select Mode
-        </Text>
-      </View>
-      <View className="p-2">
-        {agents.map((agent) => (
-          <Pressable
-            key={agent.name}
-            onPress={() => {
-              setSelectedAgent(agent.name);
-              router.back();
-            }}
-            className={`px-4 py-3 rounded-xl mx-2 mb-1 ${
+    <View className="flex-1 bg-gray-50 dark:bg-gray-900 p-2">
+      {agents.map((agent) => (
+        <Pressable
+          key={agent.name}
+          onPress={() => {
+            setSelectedAgent(agent.name);
+            router.back();
+          }}
+          className={`px-4 py-3 rounded-xl mx-2 mb-1 ${
+            selectedAgent === agent.name
+              ? "bg-blue-50 dark:bg-blue-900/30"
+              : "active:bg-gray-100 dark:active:bg-gray-700"
+          }`}
+        >
+          <Text
+            className={`text-base capitalize ${
               selectedAgent === agent.name
-                ? "bg-blue-50 dark:bg-blue-900/30"
-                : "active:bg-gray-100 dark:active:bg-gray-700"
+                ? "text-blue-600 dark:text-blue-400 font-medium"
+                : "text-gray-900 dark:text-white"
             }`}
           >
-            <Text
-              className={`text-base capitalize ${
-                selectedAgent === agent.name
-                  ? "text-blue-600 dark:text-blue-400 font-medium"
-                  : "text-gray-900 dark:text-white"
-              }`}
-            >
-              {agent.name}
-            </Text>
-          </Pressable>
-        ))}
-      </View>
+            {agent.name}
+          </Text>
+        </Pressable>
+      ))}
     </View>
   );
 }

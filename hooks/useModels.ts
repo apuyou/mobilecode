@@ -22,24 +22,17 @@ export function useModels(serverUrl: string) {
         return [];
       }
 
-      const connectedProviders = new Set(data.connected || []);
-      const allModels: ModelInfo[] = [];
+      const connected = new Set(data.connected || []);
 
-      for (const provider of data.all || []) {
-        if (!connectedProviders.has(provider.id)) {
-          continue;
-        }
-
-        for (const model of Object.values(provider.models || {})) {
-          allModels.push({
-            id: model.id,
-            providerID: provider.id,
-            name: model.name,
-          });
-        }
-      }
-
-      return allModels;
+      return (data.all || [])
+        .filter((p) => connected.has(p.id))
+        .flatMap((p) =>
+          Object.values(p.models || {}).map((m) => ({
+            id: m.id,
+            providerID: p.id,
+            name: m.name,
+          })),
+        );
     },
   });
 }

@@ -89,7 +89,6 @@ function RootLayoutNav() {
                 presentation: "formSheet",
                 sheetAllowedDetents: [0.35],
                 sheetGrabberVisible: true,
-                headerShown: false,
                 title: "Select Mode",
               }}
             />
@@ -99,7 +98,6 @@ function RootLayoutNav() {
                 presentation: "formSheet",
                 sheetAllowedDetents: [0.5, 0.75],
                 sheetGrabberVisible: true,
-                headerShown: false,
                 title: "Select Model",
               }}
             />
