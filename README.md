@@ -1,17 +1,18 @@
 <p align="center">
   <img src="assets/images/icon.png" width="120" alt="MobileCode logo">
 </p>
-<p align="center">A mobile client for <a href="https://github.com/anomalyco/opencode">OpenCode</a>.</p>
+<p align="center">A mobile client for <a href="https://github.com/anomalyco/opencode">OpenCode</a></p>
+
+<p align="center">
+    Try it on 🍏<a href="https://testflight.apple.com/join/3e8MksXe">TestFlight</a> or 🤖<a href="https://play.google.com/apps/testing/io.apuyou.mobilecode">Google Play</a>
+</p>
+
 <p align="center">
   <a href="https://github.com/apuyou/mobilecode/blob/main/LICENSE"><img alt="License" src="https://img.shields.io/badge/license-MIT-blue?style=flat-square" /></a>
 </p>
 
 > [!NOTE]
 > This project is not affiliated with or endorsed by [OpenCode](https://opencode.ai) in any way.
-
-<p align="center">
-    <a href="https://testflight.apple.com/join/3e8MksXe">Try on TestFlight!</a>
-</p>
 
 ---
 
@@ -46,10 +47,10 @@ The app currently requires a direct network connection to your OpenCode server, 
 
 <!-- TODO: Replace with actual store links -->
 
-| Platform | Beta | Production |
-| -------- | ---- | ---------- |
+| Platform | Beta | Store |
+| -------- | ------- | ---------- |
 | iOS      | [TestFlight](https://testflight.apple.com/join/3e8MksXe) | Coming Soon! |
-| Android  | Coming Soon! | Coming Soon! |
+| Android  | [Google Play](https://play.google.com/apps/testing/io.apuyou.mobilecode) | Coming Soon! |
 
 ## Setup
 
