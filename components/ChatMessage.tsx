@@ -2,6 +2,7 @@ import { Text, View } from "react-native";
 import type { Message, Part } from "@opencode-ai/sdk/v2";
 
 import { ChatMessagePart } from "./ChatMessagePart";
+import { TypingDots } from "./TypingDots";
 
 interface ChatMessageProps {
   message: {
@@ -51,13 +52,7 @@ export function ChatMessage({ message }: ChatMessageProps) {
           {new Date(message.info.time.created).toLocaleTimeString()}
         </Text>
       )}
-      {isAssistantTyping && (
-        <View className="flex-row items-center gap-1 mt-6 px-2">
-          <View className="w-2 h-2 rounded-full bg-gray-400" />
-          <View className="w-2 h-2 rounded-full bg-gray-400" />
-          <View className="w-2 h-2 rounded-full bg-gray-400" />
-        </View>
-      )}
+      {isAssistantTyping && <TypingDots />}
     </View>
   );
 }
