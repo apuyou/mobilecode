@@ -15,9 +15,13 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import { ChatMessage } from "@/components/ChatMessage";
 import { MentionedFile, MessageInput } from "@/components/MessageInput";
+import { PermissionBanner } from "@/components/PermissionBanner";
+import { QuestionBanner } from "@/components/QuestionBanner";
 import { useAgents } from "@/hooks/useAgents";
 import { useModels } from "@/hooks/useModels";
+import { usePermissions } from "@/hooks/usePermissions";
 import { useProjects } from "@/hooks/useProjects";
+import { useQuestions } from "@/hooks/useQuestions";
 import { useSessionMessages } from "@/hooks/useSessionMessages";
 import { Identifier } from "@/lib/id";
 import { createClient } from "@/lib/opencode-client";
@@ -78,8 +82,10 @@ export function SessionChatContent({
     error,
   } = useSessionMessages(server.url, sessionId);
 
-  const { data: agents = [] } = useAgents(server.url);
-  const { data: models = [] } = useModels(server.url);
+  const { data: agents = [] } = useAgents(server);
+  const { data: models = [] } = useModels(server);
+  const { data: pendingQuestions = [] } = useQuestions(server, sessionId);
+  const { data: pendingPermissions = [] } = usePermissions(server, sessionId);
 
   // Sync agents and models to the picker store
   useEffect(() => {
@@ -113,9 +119,10 @@ export function SessionChatContent({
       return;
     }
 
-    const agentFromMessage = latestUserMessage.info.role === "user"
-      ? latestUserMessage.info.agent
-      : undefined;
+    const agentFromMessage =
+      latestUserMessage.info.role === "user"
+        ? latestUserMessage.info.agent
+        : undefined;
 
     if (agentFromMessage && agents.some((a) => a.name === agentFromMessage)) {
       setSelectedAgent(agentFromMessage);
@@ -161,8 +168,19 @@ export function SessionChatContent({
 
       const messageID = Identifier.ascending("message");
       const parts: (
-        { id: string; type: "text"; text: string } |
-        { id: string; type: "file"; mime: string; url: string; filename: string; source: { type: "file"; path: string; text: { value: string; start: number; end: number } } }
+        | { id: string; type: "text"; text: string }
+        | {
+            id: string;
+            type: "file";
+            mime: string;
+            url: string;
+            filename: string;
+            source: {
+              type: "file";
+              path: string;
+              text: { value: string; start: number; end: number };
+            };
+          }
       )[] = [
         {
           id: Identifier.ascending("part"),
@@ -271,6 +289,22 @@ export function SessionChatContent({
                 )
               }
             />
+
+            {pendingPermissions.map((permission) => (
+              <PermissionBanner
+                key={permission.id}
+                request={permission}
+                server={server}
+              />
+            ))}
+
+            {pendingQuestions.map((question) => (
+              <QuestionBanner
+                key={question.id}
+                request={question}
+                server={server}
+              />
+            ))}
 
             <MessageInput
               onSend={(text, files) =>
