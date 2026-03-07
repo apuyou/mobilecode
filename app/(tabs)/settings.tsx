@@ -70,7 +70,7 @@ export default function SettingsScreen() {
           </Text>
           <View className="flex-row justify-between py-2 border-b border-gray-100 dark:border-gray-700">
             <Text className="text-gray-600 dark:text-gray-300">
-              Configured Servers
+              Servers
             </Text>
             <Text className="text-gray-900 dark:text-white font-medium">
               {servers.length}
