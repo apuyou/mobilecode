@@ -24,6 +24,9 @@ const config: ExpoConfig = {
     bundleIdentifier,
     infoPlist: {
       ITSAppUsesNonExemptEncryption: false,
+      NSAppTransportSecurity: {
+        NSAllowsArbitraryLoads: true,
+      },
     },
   },
   android: {
@@ -42,6 +45,14 @@ const config: ExpoConfig = {
   plugins: [
     "expo-router",
     "expo-font",
+    [
+      "expo-build-properties",
+      {
+        android: {
+          usesCleartextTraffic: true,
+        },
+      },
+    ],
     [
       "@sentry/react-native/expo",
       {
