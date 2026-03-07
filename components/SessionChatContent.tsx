@@ -14,7 +14,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { ChatMessage } from "@/components/ChatMessage";
-import { MessageInput } from "@/components/MessageInput";
+import { MentionedFile, MessageInput } from "@/components/MessageInput";
 import { useAgents } from "@/hooks/useAgents";
 import { useModels } from "@/hooks/useModels";
 import { useProjects } from "@/hooks/useProjects";
@@ -150,23 +150,57 @@ export function SessionChatContent({
     : currentModel;
 
   const sendMessageMutation = useMutation({
-    mutationFn: async (text: string) => {
+    mutationFn: async ({
+      text,
+      files,
+    }: {
+      text: string;
+      files: MentionedFile[];
+    }) => {
       const client = createClient(server.url, projectPath);
 
       const messageID = Identifier.ascending("message");
-      const partID = Identifier.ascending("part");
+      const parts: (
+        { id: string; type: "text"; text: string } |
+        { id: string; type: "file"; mime: string; url: string; filename: string; source: { type: "file"; path: string; text: { value: string; start: number; end: number } } }
+      )[] = [
+        {
+          id: Identifier.ascending("part"),
+          type: "text",
+          text,
+        },
+      ];
+
+      for (const file of files) {
+        const filePath = file.path.startsWith("/")
+          ? file.path
+          : `${(projectPath || "").replace(/[\\/]+$/, "")}/${file.path}`;
+        const filename = file.path.split("/").pop() || file.path;
+
+        parts.push({
+          id: Identifier.ascending("part"),
+          type: "file",
+          mime: "text/plain",
+          url: `file://${filePath}`,
+          filename,
+          source: {
+            type: "file",
+            path: filePath,
+            text: {
+              value: `@${file.path}`,
+              start: 0,
+              end: file.path.length + 1,
+            },
+          },
+        });
+      }
+
       const result = await client.session.promptAsync({
         sessionID: sessionId,
         messageID,
         agent: selectedAgent,
         model: modelForSend,
-        parts: [
-          {
-            id: partID,
-            type: "text",
-            text,
-          },
-        ],
+        parts,
       });
 
       return result.data;
@@ -239,10 +273,14 @@ export function SessionChatContent({
             />
 
             <MessageInput
-              onSend={(text) => sendMessageMutation.mutate(text)}
+              onSend={(text, files) =>
+                sendMessageMutation.mutate({ text, files })
+              }
               disabled={sendMessageMutation.isPending}
               selectedAgent={selectedAgent}
               selectedModel={selectedModel}
+              serverUrl={server.url}
+              projectPath={projectPath}
             />
           </View>
         </KeyboardAvoidingView>

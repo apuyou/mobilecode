@@ -379,12 +379,12 @@ function QuestionToolDisplay({ part }: { part: ToolPart }) {
   const input = getInput(part);
   const metadata = getMetadata(part);
 
-  const questions = (input.questions ?? []) as Array<{
+  const questions = (input.questions ?? []) as {
     question: string;
     header?: string;
-    options?: Array<{ label: string; description?: string }>;
-  }>;
-  const answers = (metadata.answers ?? []) as Array<string[]>;
+    options?: { label: string; description?: string }[];
+  }[];
+  const answers = (metadata.answers ?? []) as string[][];
   const completed = answers.length > 0;
 
   const subtitle = (() => {
@@ -474,20 +474,20 @@ function TodoWriteToolDisplay({ part }: { part: ToolPart }) {
   const todos = (() => {
     const meta = metadata.todos;
     if (Array.isArray(meta)) {
-      return meta as Array<{
+      return meta as {
         content: string;
         status: string;
         priority?: string;
-      }>;
+      }[];
     }
 
     const inputTodos = input.todos;
     if (Array.isArray(inputTodos)) {
-      return inputTodos as Array<{
+      return inputTodos as {
         content: string;
         status: string;
         priority?: string;
-      }>;
+      }[];
     }
 
     return [];
