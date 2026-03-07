@@ -315,6 +315,7 @@ export function MessageInput({
             onSelectionChange={handleSelectionChange}
             placeholder="Ask anything... (type @ for files)"
             className="flex-1 self-start text-base p-0 m-0"
+            style={{ maxHeight: 120 }}
             placeholderTextColor="#9ca3af"
             multiline
             maxLength={10000}
