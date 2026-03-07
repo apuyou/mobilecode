@@ -1,12 +1,18 @@
 import { useQuery } from "@tanstack/react-query";
 
 import { createClient } from "@/lib/opencode-client";
+import { Server } from "@/stores";
 
-export function useSessions(serverUrl: string, projectPath?: string) {
+export function useSessions(server: Server, projectPath?: string) {
   return useQuery({
-    queryKey: ["server", serverUrl, "project", projectPath, "sessions"],
+    queryKey: ["server", server.url, "project", projectPath, "sessions"],
     queryFn: async () => {
-      const client = createClient(serverUrl, projectPath);
+      const client = createClient({
+        baseUrl: server.url,
+        directory: projectPath,
+        username: server.username,
+        password: server.password,
+      });
       const result = await client.session.list({
         directory: projectPath,
       });

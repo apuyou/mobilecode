@@ -11,6 +11,8 @@ export interface Server {
   name: string;
   url: string;
   connectionMode: "direct" | "relay";
+  username?: string;
+  password?: string;
   publicKey?: string;
   secretKey?: string;
 }

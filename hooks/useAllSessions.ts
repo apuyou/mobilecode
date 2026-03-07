@@ -9,7 +9,11 @@ export function useAllSessions(servers: Server[]) {
     queries: servers.map((server) => ({
       queryKey: ["server", server.url, "projects"],
       queryFn: async () => {
-        const client = createClient(server.url);
+        const client = createClient({
+          baseUrl: server.url,
+          username: server.username,
+          password: server.password,
+        });
         const projectsResult = await client.project.list();
 
         if (projectsResult.error) {
@@ -48,7 +52,12 @@ export function useAllSessions(servers: Server[]) {
     queries: projects.map(({ server, project }) => ({
       queryKey: ["server", server.url, "project", project.path, "sessions"],
       queryFn: async () => {
-        const client = createClient(server.url, project.path);
+        const client = createClient({
+          baseUrl: server.url,
+          directory: project.path,
+          username: server.username,
+          password: server.password,
+        });
         const result = await client.session.list({
           directory: project.path,
         });

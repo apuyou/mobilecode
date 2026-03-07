@@ -18,6 +18,8 @@ import { useAppStore } from "@/stores";
 export default function AddServerScreen() {
   const [name, setName] = useState("");
   const [url, setUrl] = useState("");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
   const [validationError, setValidationError] = useState<string | null>(null);
 
   const addServer = useAppStore((s) => s.addServer);
@@ -27,16 +29,20 @@ export default function AddServerScreen() {
   const handleSave = () => {
     if (!name.trim()) {
       setValidationError("Please enter a server name");
+
       return;
     }
     if (!url.trim()) {
       setValidationError("Please enter a server URL");
+
       return;
     }
 
     addServer({
       name: name.trim(),
       url: url.trim(),
+      username: username.trim() || undefined,
+      password: password.trim() || undefined,
       connectionMode: "direct",
     });
 
@@ -66,13 +72,14 @@ export default function AddServerScreen() {
           {/* Name Input */}
           <View className="mb-4">
             <Text className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Server Name
+              Server Name <Text className="text-red-500">*</Text>
             </Text>
             <TextInput
               value={name}
               onChangeText={setName}
               placeholder="My Dev Machine"
               placeholderTextColor="#9ca3af"
+              autoCorrect={false}
               className="bg-white dark:bg-gray-800 rounded-xl px-4 py-3 text-base text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700"
             />
           </View>
@@ -80,7 +87,7 @@ export default function AddServerScreen() {
           {/* URL Input */}
           <View className="mb-4">
             <Text className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Server URL
+              Server URL <Text className="text-red-500">*</Text>
             </Text>
             <TextInput
               value={url}
@@ -94,9 +101,48 @@ export default function AddServerScreen() {
             />
           </View>
 
+          {/* Username Input */}
+          <View className="mb-4">
+            <Text className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Username
+            </Text>
+            <TextInput
+              value={username}
+              onChangeText={setUsername}
+              placeholder="Optional"
+              placeholderTextColor="#9ca3af"
+              autoCapitalize="none"
+              autoCorrect={false}
+              className="bg-white dark:bg-gray-800 rounded-xl px-4 py-3 text-base text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700"
+            />
+          </View>
+
+          {/* Password Input */}
+          <View className="mb-4">
+            <Text className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Password
+            </Text>
+            <TextInput
+              value={password}
+              onChangeText={setPassword}
+              placeholder="Optional"
+              placeholderTextColor="#9ca3af"
+              autoCapitalize="none"
+              autoCorrect={false}
+              secureTextEntry
+              className="bg-white dark:bg-gray-800 rounded-xl px-4 py-3 text-base text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700"
+            />
+          </View>
+
           {/* Test Connection Button */}
           <Pressable
-            onPress={() => testConnection(url)}
+            onPress={() =>
+              testConnection({
+                url,
+                username: username.trim() || undefined,
+                password: password.trim() || undefined,
+              })
+            }
             disabled={testing}
             className="bg-gray-200 dark:bg-gray-700 rounded-xl py-3 flex-row items-center justify-center mb-4"
           >

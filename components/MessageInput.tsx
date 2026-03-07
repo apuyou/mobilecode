@@ -17,6 +17,7 @@ import {
 } from "@/components/FileMentionPopover";
 import { useFileSearch } from "@/hooks/useFileSearch";
 import { ModelInfo } from "@/hooks/useModels";
+import { Server } from "@/stores";
 
 export interface MentionedFile {
   path: string;
@@ -27,7 +28,7 @@ interface MessageInputProps {
   disabled?: boolean;
   selectedAgent: string;
   selectedModel: ModelInfo | undefined;
-  serverUrl: string;
+  server: Server;
   projectPath: string | undefined;
 }
 
@@ -148,7 +149,7 @@ export function MessageInput({
   disabled,
   selectedAgent,
   selectedModel,
-  serverUrl,
+  server,
   projectPath,
 }: MessageInputProps) {
   const [message, setMessage] = useState("");
@@ -162,7 +163,7 @@ export function MessageInput({
   const inputRef = useRef<TextInput>(null);
 
   const { data: searchResults = [], isLoading: isSearching } = useFileSearch(
-    serverUrl,
+    server,
     projectPath,
     mentionQuery,
   );

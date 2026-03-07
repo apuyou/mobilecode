@@ -7,6 +7,7 @@ import { ActivityIndicator, Pressable, Text, View } from "react-native";
 import { SessionCard } from "@/components/SessionCard";
 import { useSessions } from "@/hooks/useSessions";
 import { createClient } from "@/lib/opencode-client";
+import { Server } from "@/stores";
 
 interface Project {
   id: string;
@@ -16,22 +17,27 @@ interface Project {
 
 interface ProjectSessionsProps {
   project: Project;
-  serverUrl: string;
+  server: Server;
 }
 
-export function ProjectSessions({ project, serverUrl }: ProjectSessionsProps) {
+export function ProjectSessions({ project, server }: ProjectSessionsProps) {
   const { serverId } = useLocalSearchParams<{ serverId: string }>();
   const [showAll, setShowAll] = useState(false);
   const queryClient = useQueryClient();
 
   const { data: sessions = [], isLoading } = useSessions(
-    serverUrl,
+    server,
     project.path,
   );
 
   const createSessionMutation = useMutation({
     mutationFn: async () => {
-      const client = createClient(serverUrl, project.path);
+      const client = createClient({
+        baseUrl: server.url,
+        directory: project.path,
+        username: server.username,
+        password: server.password,
+      });
       const result = await client.session.create({
         directory: project.path,
       });
@@ -44,7 +50,7 @@ export function ProjectSessions({ project, serverUrl }: ProjectSessionsProps) {
     },
     onSuccess: (session) => {
       queryClient.invalidateQueries({
-        queryKey: ["server", serverUrl, "project", project.path, "sessions"],
+        queryKey: ["server", server.url, "project", project.path, "sessions"],
       });
       if (session) {
         router.push(

@@ -20,14 +20,19 @@ export function SessionSettingsContent({
   sessionId,
 }: SessionSettingsContentProps) {
   const queryClient = useQueryClient();
-  const { data: messages = [] } = useSessionMessages(server.url, sessionId);
-  const { data: projects = [] } = useProjects(server.url);
+  const { data: messages = [] } = useSessionMessages(server, sessionId);
+  const { data: projects = [] } = useProjects(server);
 
   const projectPath = projects.find((p) => p.id === projectId)?.worktree;
 
   const archiveMutation = useMutation({
     mutationFn: async () => {
-      const client = createClient(server.url, projectPath);
+      const client = createClient({
+        baseUrl: server.url,
+        directory: projectPath,
+        username: server.username,
+        password: server.password,
+      });
       await client.session.update({
         sessionID: sessionId,
         time: { archived: Date.now() },
@@ -44,7 +49,11 @@ export function SessionSettingsContent({
   const { data: models = [] } = useQuery({
     queryKey: ["server", server.url, "providers"],
     queryFn: async () => {
-      const client = createClient(server.url);
+      const client = createClient({
+        baseUrl: server.url,
+        username: server.username,
+        password: server.password,
+      });
       const result = await client.provider.list();
 
       return result.data?.all || [];

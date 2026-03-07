@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 
 import { createClient } from "@/lib/opencode-client";
+import { Server } from "@/stores";
 
 export interface ModelInfo {
   id: string;
@@ -8,11 +9,15 @@ export interface ModelInfo {
   name: string;
 }
 
-export function useModels(serverUrl: string) {
+export function useModels(server: Server) {
   return useQuery({
-    queryKey: ["server", serverUrl, "providers"],
+    queryKey: ["server", server.url, "providers"],
     queryFn: async () => {
-      const client = createClient(serverUrl);
+      const client = createClient({
+        baseUrl: server.url,
+        username: server.username,
+        password: server.password,
+      });
       const result = await client.provider.list();
 
       return result.data;

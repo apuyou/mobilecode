@@ -32,7 +32,11 @@ export function ServerContent({ server }: ServerContentProps) {
   } = useQuery({
     queryKey: ["server", server.url, "projects"],
     queryFn: async () => {
-      const client = createClient(server.url);
+      const client = createClient({
+        baseUrl: server.url,
+        username: server.username,
+        password: server.password,
+      });
       const result = await client.project.list();
 
       if (result.error) {
@@ -87,7 +91,7 @@ export function ServerContent({ server }: ServerContentProps) {
       keyExtractor={(item) => item.id}
       renderItem={({ item }) => (
         <View className="bg-white dark:bg-gray-800 rounded-xl p-4 mb-4">
-          <ProjectSessions project={item} serverUrl={server.url} />
+          <ProjectSessions project={item} server={server} />
         </View>
       )}
       refreshControl={

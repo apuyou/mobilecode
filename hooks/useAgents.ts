@@ -1,12 +1,17 @@
 import { useQuery } from "@tanstack/react-query";
 
 import { createClient } from "@/lib/opencode-client";
+import { Server } from "@/stores";
 
-export function useAgents(serverUrl: string) {
+export function useAgents(server: Server) {
   return useQuery({
-    queryKey: ["server", serverUrl, "agents"],
+    queryKey: ["server", server.url, "agents"],
     queryFn: async () => {
-      const client = createClient(serverUrl);
+      const client = createClient({
+        baseUrl: server.url,
+        username: server.username,
+        password: server.password,
+      });
       const result = await client.app.agents();
 
       return result.data || [];

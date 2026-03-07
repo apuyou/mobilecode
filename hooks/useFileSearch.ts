@@ -1,23 +1,29 @@
 import { useQuery } from "@tanstack/react-query";
 
 import { createClient } from "@/lib/opencode-client";
+import { Server } from "@/stores";
 
 export function useFileSearch(
-  serverUrl: string,
+  server: Server,
   projectPath: string | undefined,
   query: string,
 ) {
   return useQuery({
     queryKey: [
       "server",
-      serverUrl,
+      server.url,
       "project",
       projectPath,
       "fileSearch",
       query,
     ],
     queryFn: async () => {
-      const client = createClient(serverUrl, projectPath);
+      const client = createClient({
+        baseUrl: server.url,
+        directory: projectPath,
+        username: server.username,
+        password: server.password,
+      });
       const result = await client.find.files({
         query,
         dirs: "true",

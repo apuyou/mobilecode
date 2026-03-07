@@ -49,7 +49,7 @@ export function SessionChatContent({
   const setSelectedAgent = usePickerStore((s) => s.setSelectedAgent);
   const setSelectedModel = usePickerStore((s) => s.setSelectedModel);
 
-  const { data: projects = [] } = useProjects(server.url);
+  const { data: projects = [] } = useProjects(server);
 
   const projectPath = projects.find((p) => p.id === projectId)?.worktree;
 
@@ -63,7 +63,12 @@ export function SessionChatContent({
       sessionId,
     ],
     queryFn: async () => {
-      const client = createClient(server.url, projectPath);
+      const client = createClient({
+        baseUrl: server.url,
+        directory: projectPath,
+        username: server.username,
+        password: server.password,
+      });
       const result = await client.session.get({
         sessionID: sessionId,
       });
@@ -80,7 +85,7 @@ export function SessionChatContent({
     data: messages = [],
     isLoading,
     error,
-  } = useSessionMessages(server.url, sessionId);
+  } = useSessionMessages(server, sessionId);
 
   const { data: agents = [] } = useAgents(server);
   const { data: models = [] } = useModels(server);
@@ -164,7 +169,12 @@ export function SessionChatContent({
       text: string;
       files: MentionedFile[];
     }) => {
-      const client = createClient(server.url, projectPath);
+      const client = createClient({
+        baseUrl: server.url,
+        directory: projectPath,
+        username: server.username,
+        password: server.password,
+      });
 
       const messageID = Identifier.ascending("message");
       const parts: (
@@ -313,7 +323,7 @@ export function SessionChatContent({
               disabled={sendMessageMutation.isPending}
               selectedAgent={selectedAgent}
               selectedModel={selectedModel}
-              serverUrl={server.url}
+              server={server}
               projectPath={projectPath}
             />
           </View>
