@@ -97,7 +97,7 @@ export default function SettingsScreen() {
           </Text>
           <Pressable
             onPress={() =>
-              Linking.openURL("https://github.com/anthropics/opencode")
+              Linking.openURL("https://opencode.ai/docs")
             }
             className="flex-row items-center justify-between py-3 border-b border-gray-100 dark:border-gray-700"
           >
