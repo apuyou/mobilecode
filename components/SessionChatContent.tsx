@@ -5,12 +5,11 @@ import { useEffect, useRef } from "react";
 import {
   ActivityIndicator,
   FlatList,
-  KeyboardAvoidingView,
-  Platform,
   Pressable,
   Text,
   View,
 } from "react-native";
+import { KeyboardAvoidingView } from "react-native-keyboard-controller";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { ChatMessage } from "@/components/ChatMessage";
@@ -264,7 +263,7 @@ export function SessionChatContent({
         edges={["bottom"]}
       >
         <KeyboardAvoidingView
-          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          behavior="padding"
           className="flex-1"
           keyboardVerticalOffset={100}
         >

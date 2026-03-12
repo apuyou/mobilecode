@@ -8,6 +8,7 @@ import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { StrictMode, useEffect } from "react";
+import { KeyboardProvider } from "react-native-keyboard-controller";
 import "react-native-reanimated";
 import "../global.css";
 
@@ -76,46 +77,48 @@ function RootLayoutNav() {
 
   return (
     <StrictMode>
-      <QueryClientProvider client={queryClient}>
-        <ThemeProvider
-          value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
-        >
-          <Stack>
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            <Stack.Screen
-              name="server/new"
-              options={{
-                presentation: "modal",
-                title: "Add Server",
-              }}
-            />
-            <Stack.Screen
-              name="server/[serverId]/project/[projectId]/session/[sessionId]/index"
-              options={{
-                title: "Chat",
-              }}
-            />
-            <Stack.Screen
-              name="picker/agent"
-              options={{
-                presentation: "formSheet",
-                sheetAllowedDetents: [0.35],
-                sheetGrabberVisible: true,
-                title: "Select Mode",
-              }}
-            />
-            <Stack.Screen
-              name="picker/model"
-              options={{
-                presentation: "formSheet",
-                sheetAllowedDetents: [0.5, 0.75],
-                sheetGrabberVisible: true,
-                title: "Select Model",
-              }}
-            />
-          </Stack>
-        </ThemeProvider>
-      </QueryClientProvider>
+      <KeyboardProvider>
+        <QueryClientProvider client={queryClient}>
+          <ThemeProvider
+            value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
+          >
+            <Stack>
+              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+              <Stack.Screen
+                name="server/new"
+                options={{
+                  presentation: "modal",
+                  title: "Add Server",
+                }}
+              />
+              <Stack.Screen
+                name="server/[serverId]/project/[projectId]/session/[sessionId]/index"
+                options={{
+                  title: "Chat",
+                }}
+              />
+              <Stack.Screen
+                name="picker/agent"
+                options={{
+                  presentation: "formSheet",
+                  sheetAllowedDetents: [0.35],
+                  sheetGrabberVisible: true,
+                  title: "Select Mode",
+                }}
+              />
+              <Stack.Screen
+                name="picker/model"
+                options={{
+                  presentation: "formSheet",
+                  sheetAllowedDetents: [0.5, 0.75],
+                  sheetGrabberVisible: true,
+                  title: "Select Model",
+                }}
+              />
+            </Stack>
+          </ThemeProvider>
+        </QueryClientProvider>
+      </KeyboardProvider>
     </StrictMode>
   );
 }

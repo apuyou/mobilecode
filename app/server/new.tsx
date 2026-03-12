@@ -1,15 +1,14 @@
+import { router } from "expo-router";
 import { useState } from "react";
 import {
   ActivityIndicator,
-  KeyboardAvoidingView,
-  Platform,
   Pressable,
   ScrollView,
   Text,
   TextInput,
   View,
 } from "react-native";
-import { router } from "expo-router";
+import { KeyboardAvoidingView } from "react-native-keyboard-controller";
 import { CheckCircle, Server, XCircle } from "lucide-react-native";
 
 import { useTestConnection } from "@/hooks/useTestConnection";
@@ -57,7 +56,7 @@ export default function AddServerScreen() {
 
   return (
     <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      behavior="padding"
       className="flex-1 bg-gray-50 dark:bg-gray-900"
     >
       <ScrollView className="flex-1" keyboardShouldPersistTaps="handled">
