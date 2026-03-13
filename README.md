@@ -78,22 +78,6 @@ The app currently requires a direct network connection to your OpenCode server, 
 | Data Fetching    | TanStack React Query               |
 | API Client       | `@opencode-ai/sdk`                 |
 
-## Development
-
-```bash
-# Install dependencies
-bun install
-
-# Start the development server
-bun start
-
-# Run on iOS simulator
-bun ios
-
-# Run on Android emulator
-bun android
-```
-
 ## Contributing
 
 Contributions are welcome! Feel free to open issues and pull requests.
