@@ -1,5 +1,6 @@
 import { router } from "expo-router";
 import { Pressable, Text, View } from "react-native";
+import { KeyboardAvoidingView } from "react-native-keyboard-controller";
 
 import { usePickerStore } from "@/stores/picker";
 
@@ -9,7 +10,10 @@ export default function AgentPickerModal() {
   const setSelectedAgent = usePickerStore((s) => s.setSelectedAgent);
 
   return (
-    <View className="flex-1 bg-gray-50 dark:bg-gray-900 p-2">
+    <KeyboardAvoidingView
+      behavior="padding"
+      className="flex-1 bg-gray-50 dark:bg-gray-900 p-2"
+    >
       {agents.map((agent) => (
         <Pressable
           key={agent.name}
@@ -34,6 +38,6 @@ export default function AgentPickerModal() {
           </Text>
         </Pressable>
       ))}
-    </View>
+    </KeyboardAvoidingView>
   );
 }

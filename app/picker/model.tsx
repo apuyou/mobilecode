@@ -1,6 +1,7 @@
 import { router } from "expo-router";
 import { useMemo, useState } from "react";
 import { Pressable, SectionList, Text, TextInput, View } from "react-native";
+import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 
 import { ModelInfo } from "@/hooks/useModels";
 import { usePickerStore } from "@/stores/picker";
@@ -40,6 +41,9 @@ export default function ModelPickerModal() {
   return (
     <SectionList
       className="flex-1 bg-gray-50 dark:bg-gray-900 px-2"
+      renderScrollComponent={(props) => (
+        <KeyboardAwareScrollView {...props} extraKeyboardSpace={100} />
+      )}
       sections={sections}
       keyExtractor={(item) => `${item.providerID}/${item.id}`}
       keyboardShouldPersistTaps="handled"
